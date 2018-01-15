@@ -35,6 +35,8 @@ class JvmLower(val context: JvmBackendContext) {
         LateinitLowering(context, true).lower(irFile)
 
         ConstAndJvmFieldPropertiesLowering().lower(irFile)
+
+        CallableReferenceLowering(context).lower(irFile)
         PropertiesLowering().lower(irFile)
 
         //Should be before interface lowering
@@ -48,12 +50,14 @@ class JvmLower(val context: JvmBackendContext) {
         InnerClassConstructorCallsLowering(context).runOnFilePostfix(irFile)
 
         irFile.acceptVoid(PatchDeclarationParentsVisitor())
+
         LocalDeclarationsLowering(
             context,
             object : LocalNameProvider {
                 override fun localName(descriptor: DeclarationDescriptor): String =
                     NameUtils.sanitizeAsJavaIdentifier(super.localName(descriptor))
-            }
+            },
+            Visibilities.PUBLIC
         ).runOnFilePostfix(irFile)
 
         EnumClassLowering(context).runOnFilePostfix(irFile)
