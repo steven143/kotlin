@@ -109,6 +109,9 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
         }
     }
 
+    val sourceRootType
+        get() = if (isTests) JavaSourceRootType.TEST_SOURCE else JavaSourceRootType.SOURCE
+
     private fun collectSources(receiver: MutableList<File>) {
         val moduleExcludes = module.excludeRootsList.urls.mapTo(java.util.HashSet(), JpsPathUtil::urlToFile)
 
@@ -116,7 +119,6 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
             .getOrCreateCompilerConfiguration(module.project)
             .compilerExcludes
 
-        val sourceRootType = if (isTests) JavaSourceRootType.TEST_SOURCE else JavaSourceRootType.SOURCE
         module.getSourceRoots(sourceRootType).forEach {
             it.file.walkTopDown()
                 .onEnter { it !in moduleExcludes }

@@ -122,8 +122,11 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
             val friendDirs = target.friendOutputDirs
 
             val moduleSources =
-                if (IncrementalCompilation.isEnabled() && target.expectedBy.isEmpty()) {
-                    sourceFiles.get(target.jpsModuleBuildTarget)
+                if (IncrementalCompilation.isEnabled()) {
+                    sourceFiles.get(target.jpsModuleBuildTarget).toMutableList().also {
+                        // add all required files with correspond `expected by`/`actual` declarations
+
+                    }
                 } else {
                     target.sources
                 }
