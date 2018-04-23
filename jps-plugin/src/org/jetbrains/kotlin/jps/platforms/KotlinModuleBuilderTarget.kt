@@ -86,25 +86,8 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
             .includedIn(JpsJavaClasspathKind.compile(isTests))
     }
 
-    val expectedBy by lazy(::findExpectedBy)
-
-    private fun findExpectedBy(): List<KotlinModuleBuilderTarget> {
-        val kotlinFacetExtension = module.kotlinFacet
-        val implementedModuleNames = kotlinFacetExtension?.settings?.implementedModuleNames ?: return listOf()
-        if (implementedModuleNames.isEmpty()) return listOf()
-
-        return allDependencies.modules
-            .filter { it.name in implementedModuleNames }
-            .map { context.kotlinBuildTargets[ModuleBuildTarget(it, isTests)]!! }
-    }
-
     val sources by lazy {
         mutableListOf<File>().also { result ->
-            // add all common libs sources
-            expectedBy.forEach {
-                it.collectSources(result)
-            }
-
             collectSources(result)
         }
     }

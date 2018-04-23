@@ -18,21 +18,18 @@ import org.jetbrains.jps.model.module.JpsModule
 import org.jetbrains.jps.util.JpsPathUtil
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
-import org.jetbrains.kotlin.compilerRunner.JpsKotlinCompilerRunner
 import org.jetbrains.kotlin.config.IncrementalCompilation
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
 import org.jetbrains.kotlin.jps.model.k2MetadataCompilerArguments
-import org.jetbrains.kotlin.jps.model.kotlinCompilerSettings
 import java.io.File
 
-class KotlinCommonModuleBuildTarget(jpsModuleBuildTarget: ModuleBuildTarget) :
-    KotlinModuleBuilderTarget(jpsModuleBuildTarget) {
+class KotlinCommonModuleBuildTarget(context: CompileContext, jpsModuleBuildTarget: ModuleBuildTarget) :
+    KotlinModuleBuilderTarget(context, jpsModuleBuildTarget) {
 
     override fun compileModuleChunk(
         allCompiledFiles: MutableSet<File>,
         chunk: ModuleChunk,
         commonArguments: CommonCompilerArguments,
-        context: CompileContext,
         dirtyFilesHolder: DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget>,
         environment: JpsCompilerEnvironment,
         filesToCompile: MultiMap<ModuleBuildTarget, File>,
@@ -85,7 +82,7 @@ class KotlinCommonModuleBuildTarget(jpsModuleBuildTarget: ModuleBuildTarget) :
         result: MutableList<String>,
         isTests: Boolean
     ) {
-        val dependencyBuildTarget = ModuleBuildTarget(module, isTests).kotlinData
+        val dependencyBuildTarget = context.kotlinBuildTargets[ModuleBuildTarget(module, isTests)]
 
         if (dependencyBuildTarget != this@KotlinCommonModuleBuildTarget &&
             dependencyBuildTarget is KotlinCommonModuleBuildTarget &&

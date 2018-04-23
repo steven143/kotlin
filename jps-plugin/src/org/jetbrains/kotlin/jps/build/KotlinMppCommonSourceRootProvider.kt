@@ -11,7 +11,11 @@ import org.jetbrains.jps.builders.java.JavaModuleBuildTargetType
 import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor
 import org.jetbrains.jps.builders.storage.BuildDataPaths
 import org.jetbrains.jps.incremental.ModuleBuildTarget
-import org.jetbrains.kotlin.jps.platforms.kotlinData
+import org.jetbrains.jps.model.java.JavaSourceRootType
+import org.jetbrains.jps.model.java.JpsJavaClasspathKind
+import org.jetbrains.jps.model.java.JpsJavaExtensionService
+import org.jetbrains.jps.model.module.JpsModule
+import org.jetbrains.kotlin.jps.model.kotlinFacet
 
 /**
  * Required for Multiplatform Projects.
@@ -23,10 +27,36 @@ class KotlinMppCommonSourceRootProvider : AdditionalRootsProviderService<JavaSou
         target: BuildTarget<JavaSourceRootDescriptor>,
         dataPaths: BuildDataPaths?
     ): List<JavaSourceRootDescriptor> {
-        val kotlinTarget = (target as? ModuleBuildTarget)?.kotlinData ?: return listOf()
+        val moduleBuildTarget = target as? ModuleBuildTarget ?: return listOf()
+        val module = moduleBuildTarget.module
 
-        return kotlinTarget.expectedBy.flatMap {
-            it.module.getSourceRoots(it.sourceRootType).map {
+        val kotlinFacetExtension = module.kotlinFacet
+        val implementedModuleNames = kotlinFacetExtension?.settings?.implementedModuleNames ?: return listOf()
+        if (implementedModuleNames.isEmpty()) return listOf()
+
+        val result = mutableListOf<JavaSourceRootDescriptor>()
+        JpsJavaExtensionService.dependencies(module)
+            .exportedOnly()
+            .includedIn(JpsJavaClasspathKind.compile(moduleBuildTarget.isTests))
+            .processModules {
+                if (it.name in implementedModuleNames) {
+                    if (moduleBuildTarget.isTests) result.addSourceRoots(it, JavaSourceRootType.TEST_SOURCE, target)
+
+                    // Note, production sources should be added for both production and tests targets
+                    result.addSourceRoots(it, JavaSourceRootType.SOURCE, target)
+                }
+            }
+
+        return result
+    }
+
+    private fun MutableList<JavaSourceRootDescriptor>.addSourceRoots(
+        it: JpsModule,
+        sourceRootType: JavaSourceRootType,
+        target: ModuleBuildTarget
+    ) {
+        it.getSourceRoots(sourceRootType).map {
+            add(
                 JavaSourceRootDescriptor(
                     it.file,
                     target,
@@ -35,7 +65,7 @@ class KotlinMppCommonSourceRootProvider : AdditionalRootsProviderService<JavaSou
                     it.properties.packagePrefix,
                     setOf()
                 )
-            }
+            )
         }
     }
 }
