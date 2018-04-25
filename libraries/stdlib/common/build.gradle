@@ -26,11 +26,18 @@ sourceSets {
             srcDir 'test'
         }
     }
+    unsigned {
+        kotlin {
+            srcDir '../unsigned/src'
+        }
+    }
 }
 
 dependencies {
     testCompile project(":kotlin-test:kotlin-test-common")
     testCompile project(":kotlin-test:kotlin-test-annotations-common")
+
+    unsignedCompile sourceSets.main.output
 }
 
 compileKotlinCommon {
@@ -43,6 +50,16 @@ compileKotlinCommon {
     kotlinOptions {
         freeCompilerArgs = [
                 "-module-name", project.name
+        ]
+    }
+}
+
+compileUnsignedKotlinCommon {
+    kotlinOptions {
+        languageVersion = "1.3"
+        apiVersion = "1.3"
+        freeCompilerArgs = [
+                "-Xallow-kotlin-package"
         ]
     }
 }
