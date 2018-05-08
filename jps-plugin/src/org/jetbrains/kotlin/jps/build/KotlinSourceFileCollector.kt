@@ -18,28 +18,66 @@ package org.jetbrains.kotlin.jps.build
 
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.util.containers.MultiMap
+import org.jetbrains.jps.ModuleChunk
 import org.jetbrains.jps.builders.DirtyFilesHolder
 import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor
 import org.jetbrains.jps.incremental.ModuleBuildTarget
-import org.jetbrains.jps.model.java.JavaSourceRootProperties
-import org.jetbrains.jps.model.java.JavaSourceRootType
-import org.jetbrains.jps.model.module.JpsModuleSourceRoot
+import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuilderTarget
 
 import java.io.File
 
 object KotlinSourceFileCollector {
     // For incremental compilation
-    fun getDirtySourceFiles(dirtyFilesHolder: DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget>): MultiMap<ModuleBuildTarget, File> {
+    fun getDirtySourceFiles(
+        dirtyFilesHolder: DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget>,
+        chunk: org.jetbrains.jps.ModuleChunk,
+        kotlinTarget: KotlinModuleBuilderTarget?
+    ): MultiMap<ModuleBuildTarget, File> {
         val result = MultiMap<ModuleBuildTarget, File>()
 
-        dirtyFilesHolder.processDirtyFiles { target, file, root ->
-            //TODO this is a workaround for bug in JPS: the latter erroneously calls process with invalid parameters
-            if (root.getTarget() == target && isKotlinSourceFile(file)) {
-                result.putValue(target, file)
-            }
-            true
-        }
+//        dirtyFilesHolder.processDirtyFiles { target, file, root ->
+//            if (isKotlinSourceFile(file)) {
+//                result.putValue(target, file)
+//            }
+//            true
+//        }
+
+        // add files from common modules, whether or not they are in build scope
+        addOutOfScopeCommonModuleFiles(kotlinTarget, chunk, result)
+
         return result
+    }
+
+    private fun addOutOfScopeCommonModuleFiles(
+        kotlinTarget: KotlinModuleBuilderTarget?,
+        chunk: ModuleChunk,
+        result: MultiMap<ModuleBuildTarget, File>
+    ) {
+        if (kotlinTarget != null) {
+            val context = kotlinTarget.context
+            val fsState = context.projectDescriptor.fsState
+            val scope = context.scope
+            chunk.targets.forEach { target ->
+                val delta = fsState.getEffectiveFilesDelta(context, target)
+                delta.lockData()
+                try {
+                    for (entry in delta.sourcesToRecompile.entries) {
+                        val isCommonRoot = entry.key is KotlinCommonModuleSourceRoot
+                        entry.value.forEach { file ->
+                            if (entry.key.target == target) {
+                                if (scope.isAffected(target, file) || isCommonRoot) {
+                                    if (isKotlinSourceFile(file)) {
+                                        result.putValue(target, file)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } finally {
+                    delta.unlockData()
+                }
+            }
+        }
     }
 
     fun getRemovedKotlinFiles(

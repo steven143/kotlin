@@ -39,7 +39,7 @@ class KotlinCommonModuleBuildTarget(context: CompileContext, jpsModuleBuildTarge
         if (reportAndSkipCircular(chunk, environment)) return false
 
         if (!IncrementalCompilation.isEnabled()) {
-            // Mark all dependents as dirty if incremental compilation is not supported
+            // Mark all dependents as dirty if incremental compilation is not enabled
             FSOperations.markDirtyRecursively(context, CompilationRound.CURRENT, chunk)
         }
 
@@ -86,7 +86,7 @@ class KotlinCommonModuleBuildTarget(context: CompileContext, jpsModuleBuildTarge
 
         if (dependencyBuildTarget != this@KotlinCommonModuleBuildTarget &&
             dependencyBuildTarget is KotlinCommonModuleBuildTarget &&
-            dependencyBuildTarget.sources.isNotEmpty()
+            dependencyBuildTarget.sourceFiles.isNotEmpty()
         ) {
             result.add(dependencyBuildTarget.destination)
         }

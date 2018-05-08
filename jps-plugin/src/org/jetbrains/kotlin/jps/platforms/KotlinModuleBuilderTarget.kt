@@ -7,7 +7,9 @@ package org.jetbrains.kotlin.jps.platforms
 
 import com.intellij.util.containers.MultiMap
 import org.jetbrains.jps.ModuleChunk
+import org.jetbrains.jps.builders.BuildRootDescriptor
 import org.jetbrains.jps.builders.DirtyFilesHolder
+import org.jetbrains.jps.builders.impl.BuildRootDescriptorImpl
 import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.ModuleBuildTarget
@@ -21,8 +23,8 @@ import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
+import org.jetbrains.kotlin.jps.build.KotlinCommonModuleSourceRoot
 import org.jetbrains.kotlin.jps.build.KotlinSourceFileCollector
-import org.jetbrains.kotlin.jps.model.kotlinFacet
 import org.jetbrains.kotlin.jps.model.productionOutputFilePath
 import org.jetbrains.kotlin.jps.model.testOutputFilePath
 import org.jetbrains.kotlin.modules.TargetId
@@ -70,7 +72,7 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
                 result.addIfNotNull(context.kotlinBuildTargets[relatedProductionModule?.productionBuildTarget])
             }
 
-            return result.filter { it.sources.isNotEmpty() }
+            return result.filter { it.sourceFiles.isNotEmpty() }
         }
 
     val friendOutputDirs: List<File>
@@ -87,28 +89,42 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
     }
 
     val sources by lazy {
-        mutableListOf<File>().also { result ->
+        mutableMapOf<String, Source>().also { result ->
             collectSources(result)
         }
     }
 
-    val sourceRootType
+    val sourceFiles by lazy {
+        sources.values.map { it.file }
+    }
+
+    class Source(val file: File, val isCommonModule: Boolean)
+
+    val sourceRootType: JavaSourceRootType
         get() = if (isTests) JavaSourceRootType.TEST_SOURCE else JavaSourceRootType.SOURCE
 
-    private fun collectSources(receiver: MutableList<File>) {
+    fun isCommonModuleFile(path: String): Boolean = sources[path]?.isCommonModule == true
+
+    private fun collectSources(receiver: MutableMap<String, Source>) {
         val moduleExcludes = module.excludeRootsList.urls.mapTo(java.util.HashSet(), JpsPathUtil::urlToFile)
 
         val compilerExcludes = JpsJavaExtensionService.getInstance()
             .getOrCreateCompilerConfiguration(module.project)
             .compilerExcludes
 
-        module.getSourceRoots(sourceRootType).forEach {
-            it.file.walkTopDown()
+        val buildRootIndex = context.projectDescriptor.buildRootIndex
+        module.getSourceRoots(sourceRootType).forEach { sourceRoot ->
+            sourceRoot.file.walkTopDown()
                 .onEnter { it !in moduleExcludes }
-                .filterTo(receiver) {
-                    !compilerExcludes.isExcluded(it) &&
-                            it.isFile &&
-                            KotlinSourceFileCollector.isKotlinSourceFile(it)
+                .forEach {
+                    if (!compilerExcludes.isExcluded(it) &&
+                        it.isFile &&
+                        KotlinSourceFileCollector.isKotlinSourceFile(it)
+                    ) {
+                        val rootDescriptors = buildRootIndex.getRootDescriptors<BuildRootDescriptor>(it, null, context)
+
+                        receiver[it.path] = Source(it, rootDescriptors.any { it is KotlinCommonModuleSourceRoot })
+                    }
                 }
         }
     }

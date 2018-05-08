@@ -43,7 +43,7 @@ class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTa
         require(chunk.representativeTarget() == jpsModuleBuildTarget)
         if (reportAndSkipCircular(chunk, environment)) return false
 
-        val sources = sources
+        val sources = sourceFiles
         if (sources.isEmpty()) return false
 
         val libraries = libraryFiles + dependenciesMetaFiles
@@ -144,7 +144,7 @@ class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTa
 
         if (dependencyBuildTarget != this@KotlinJsModuleBuildTarget &&
             dependencyBuildTarget is KotlinJsModuleBuildTarget &&
-            dependencyBuildTarget.sources.isNotEmpty()
+            dependencyBuildTarget.sourceFiles.isNotEmpty()
         ) {
             val metaFile = dependencyBuildTarget.outputMetaFile
             if (metaFile.exists()) {

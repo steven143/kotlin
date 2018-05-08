@@ -128,7 +128,7 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
 
                     }
                 } else {
-                    target.sources
+                    target.sourceFiles
                 }
 
             if (moduleSources.isNotEmpty() || hasRemovedFiles) {
