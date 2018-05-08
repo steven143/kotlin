@@ -9,11 +9,8 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.util.containers.ContainerUtil
-import com.intellij.util.containers.MultiMap
 import com.intellij.util.io.URLUtil
 import org.jetbrains.jps.ModuleChunk
-import org.jetbrains.jps.builders.DirtyFilesHolder
-import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.ModuleBuildTarget
 import org.jetbrains.jps.model.java.JpsJavaExtensionService
@@ -26,8 +23,7 @@ import org.jetbrains.kotlin.compilerRunner.JpsKotlinCompilerRunner
 import org.jetbrains.kotlin.config.IncrementalCompilation
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
 import org.jetbrains.kotlin.jps.build.KotlinBuilder
-import org.jetbrains.kotlin.jps.build.KotlinSourceFileCollector
-import org.jetbrains.kotlin.jps.build.processedTargetsWithRemovedFilesContainer
+import org.jetbrains.kotlin.jps.build.KotlinChunkDirtySourceFilesHolder
 import org.jetbrains.kotlin.jps.model.k2JvmCompilerArguments
 import org.jetbrains.kotlin.jps.model.kotlinCompilerSettings
 import org.jetbrains.kotlin.modules.KotlinModuleXmlBuilder
@@ -41,9 +37,8 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
         allCompiledFiles: MutableSet<File>,
         chunk: ModuleChunk,
         commonArguments: CommonCompilerArguments,
-        dirtyFilesHolder: DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget>,
+        dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder,
         environment: JpsCompilerEnvironment,
-        filesToCompile: MultiMap<ModuleBuildTarget, File>,
         fsOperations: FSOperationsHelper
     ): Boolean {
         if (chunk.modules.size > 1) {
@@ -55,34 +50,29 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
             )
         }
 
-        allCompiledFiles.addAll(filesToCompile.values())
+        val filesSet = dirtyFilesHolder.dirtyFiles
+        allCompiledFiles.addAll(filesSet)
 
-        val processedTargetsWithRemoved = context.processedTargetsWithRemovedFilesContainer
-
-        var totalRemovedFiles = 0
-        for (target in chunk.targets) {
-            val removedFilesInTarget = KotlinSourceFileCollector.getRemovedKotlinFiles(dirtyFilesHolder, target)
-            if (!removedFilesInTarget.isEmpty()) {
-                if (processedTargetsWithRemoved.add(target)) {
-                    totalRemovedFiles += removedFilesInTarget.size
-                }
-            }
-        }
-
-        val moduleFile = generateModuleDescription(context, chunk, filesToCompile, totalRemovedFiles != 0)
+        val moduleFile = generateModuleDescription(context, chunk, dirtyFilesHolder)
         if (moduleFile == null) {
-            KotlinBuilder.LOG.debug(
-                "Not compiling, because no files affected: " + filesToCompile.keySet().joinToString { it.presentableName }
-            )
+            if (KotlinBuilder.LOG.isDebugEnabled) {
+                KotlinBuilder.LOG.debug(
+                    "Not compiling, because no files affected: " + chunk.targets.joinToString { it.presentableName }
+                )
+            }
+
             // No Kotlin sources found
             return false
         }
 
         val module = chunk.representativeTarget().module
 
-        KotlinBuilder.LOG.debug("Compiling to JVM ${filesToCompile.values().size} files"
-                                        + (if (totalRemovedFiles == 0) "" else " ($totalRemovedFiles removed files)")
-                                        + " in " + filesToCompile.keySet().joinToString { it.presentableName })
+        if (KotlinBuilder.LOG.isDebugEnabled) {
+            val totalRemovedFiles = dirtyFilesHolder.removedFilesCount
+            KotlinBuilder.LOG.debug("Compiling to JVM ${filesSet.size} files"
+                                            + (if (totalRemovedFiles == 0) "" else " ($totalRemovedFiles removed files)")
+                                            + " in " + chunk.targets.joinToString { it.presentableName })
+        }
 
         try {
             val compilerRunner = JpsKotlinCompilerRunner()
@@ -105,8 +95,7 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
     fun generateModuleDescription(
         context: CompileContext,
         chunk: ModuleChunk,
-        sourceFiles: MultiMap<ModuleBuildTarget, File>, // ignored for non-incremental compilation
-        hasRemovedFiles: Boolean
+        dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder // ignored for non-incremental compilation
     ): File? {
         val builder = KotlinModuleXmlBuilder()
 
@@ -121,17 +110,15 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
             val outputDir = target.outputDir
             val friendDirs = target.friendOutputDirs
 
+            val jpsModuleTarget = target.jpsModuleBuildTarget
             val moduleSources =
                 if (IncrementalCompilation.isEnabled()) {
-                    sourceFiles.get(target.jpsModuleBuildTarget).toMutableList().also {
-                        // add all required files with correspond `expected by`/`actual` declarations
+                    // todo: add all required files with correspond `expected by`/`actual` declarations
+                    dirtyFilesHolder.getDirtyFiles(jpsModuleTarget)
+                } else target.sourceFiles
 
-                    }
-                } else {
-                    target.sourceFiles
-                }
-
-            if (moduleSources.isNotEmpty() || hasRemovedFiles) {
+            val hasRemovedSources = dirtyFilesHolder.getRemovedFiles(jpsModuleTarget).isNotEmpty()
+            if (moduleSources.isNotEmpty() || hasRemovedSources) {
                 noSources = false
 
                 if (logger.isEnabled) {
@@ -216,7 +203,7 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
         return File(url.substringAfter(StandardFileSystems.JRT_PROTOCOL_PREFIX).substringBeforeLast(URLUtil.JAR_SEPARATOR))
     }
 
-    fun findSourceRoots(context: CompileContext): List<JvmSourceRoot> {
+    private fun findSourceRoots(context: CompileContext): List<JvmSourceRoot> {
         val roots = context.projectDescriptor.buildRootIndex.getTargetRoots(jpsModuleBuildTarget, context)
         val result = ContainerUtil.newArrayList<JvmSourceRoot>()
         for (root in roots) {
