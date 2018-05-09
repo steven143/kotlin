@@ -107,6 +107,11 @@ public abstract class PropertyAccessorDescriptorImpl extends DeclarationDescript
     }
 
     @Override
+    public boolean isGenerated() {
+        return false;
+    }
+
+    @Override
     public boolean isExpect() {
         return false;
     }
