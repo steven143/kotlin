@@ -40,7 +40,6 @@ import org.jetbrains.jps.cmdline.ProjectDescriptor
 import org.jetbrains.jps.incremental.*
 import org.jetbrains.jps.incremental.messages.BuildMessage
 import org.jetbrains.jps.model.JpsModuleRootModificationUtil
-import org.jetbrains.jps.model.java.JpsJavaDependencyScope
 import org.jetbrains.jps.model.java.JpsJavaExtensionService
 import org.jetbrains.jps.util.JpsPathUtil
 import org.jetbrains.kotlin.cli.common.arguments.K2MetadataCompilerArguments
@@ -54,6 +53,7 @@ import org.jetbrains.kotlin.jps.build.dependeciestxt.DependenciesTxtBuilder
 import org.jetbrains.kotlin.jps.incremental.getKotlinCache
 import org.jetbrains.kotlin.jps.incremental.withLookupStorage
 import org.jetbrains.kotlin.jps.model.JpsKotlinFacetModuleExtension
+import org.jetbrains.kotlin.jps.platforms.kotlinBuildTargets
 import org.jetbrains.kotlin.test.KotlinTestUtils
 import org.jetbrains.kotlin.utils.Printer
 import java.io.ByteArrayInputStream
@@ -156,9 +156,14 @@ abstract class AbstractIncrementalJpsTest(
             val builder = IncProjectBuilder(projectDescriptor, BuilderRegistry.getInstance(), myBuildParams, CanceledStatus.NULL, mockConstantSearch, true)
             val buildResult = BuildResult()
             builder.addMessageHandler(buildResult)
-            builder.build(scope.build(), false)
+
+            val finalScope = scope.build()
+            builder.build(finalScope, false)
 
             lookupTracker.lookups.mapTo(lookupsDuringTest) { LookupSymbol(it.name, it.scopeFqName) }
+
+            // for getting kotlin platform only
+            val dummyCompileContext = CompileContextImpl.createContextForTests(finalScope, projectDescriptor)
 
             if (!buildResult.isSuccessful) {
                 val errorMessages =
@@ -170,7 +175,7 @@ abstract class AbstractIncrementalJpsTest(
                 return MakeResult(logger.log + "$COMPILATION_FAILED\n" + errorMessages + "\n", true, null)
             }
             else {
-                return MakeResult(logger.log, false, createMappingsDump(projectDescriptor))
+                return MakeResult(logger.log, false, createMappingsDump(projectDescriptor, dummyCompileContext))
             }
         }
         finally {
@@ -293,17 +298,23 @@ abstract class AbstractIncrementalJpsTest(
         } else throw IllegalStateException("No build log file in $testDataDir")
     }
 
-    private fun createMappingsDump(project: ProjectDescriptor) =
-            createKotlinIncrementalCacheDump(project) + "\n\n\n" +
+    private fun createMappingsDump(
+        project: ProjectDescriptor,
+        dummyCompileContext: CompileContext
+    ) =
+            createKotlinIncrementalCacheDump(project, dummyCompileContext) + "\n\n\n" +
             createLookupCacheDump(project) + "\n\n\n" +
             createCommonMappingsDump(project) + "\n\n\n" +
             createJavaMappingsDump(project)
 
-    private fun createKotlinIncrementalCacheDump(project: ProjectDescriptor): String {
+    private fun createKotlinIncrementalCacheDump(
+        project: ProjectDescriptor,
+        dummyCompileContext: CompileContext
+    ): String {
         return buildString {
             for (target in project.allModuleTargets.sortedBy { it.presentableName }) {
                 append("<target $target>\n")
-                append(project.dataManager.getKotlinCache(target).dump())
+                append(project.dataManager.getKotlinCache(dummyCompileContext.kotlinBuildTargets[target]!!).dump())
                 append("</target $target>\n\n\n")
             }
         }

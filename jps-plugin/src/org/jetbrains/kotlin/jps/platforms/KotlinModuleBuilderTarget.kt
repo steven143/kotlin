@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.jps.platforms
 
 import org.jetbrains.jps.ModuleChunk
 import org.jetbrains.jps.builders.BuildRootDescriptor
+import org.jetbrains.jps.builders.storage.BuildDataPaths
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.ModuleBuildTarget
 import org.jetbrains.jps.incremental.ProjectBuildException
@@ -15,16 +16,28 @@ import org.jetbrains.jps.model.java.JpsJavaClasspathKind
 import org.jetbrains.jps.model.java.JpsJavaExtensionService
 import org.jetbrains.jps.model.module.JpsModule
 import org.jetbrains.jps.util.JpsPathUtil
+import org.jetbrains.kotlin.build.GeneratedFile
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
+import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.incremental.ChangesCollector
+import org.jetbrains.kotlin.incremental.ExpectActualTrackerImpl
+import org.jetbrains.kotlin.incremental.IncrementalCompilationComponentsImpl
+import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
+import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
 import org.jetbrains.kotlin.jps.build.KotlinChunkDirtySourceFilesHolder
 import org.jetbrains.kotlin.jps.build.KotlinCommonModuleSourceRoot
 import org.jetbrains.kotlin.jps.build.isKotlinSourceFile
+import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
 import org.jetbrains.kotlin.jps.model.productionOutputFilePath
 import org.jetbrains.kotlin.jps.model.testOutputFilePath
+import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCache
+import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCompilationComponents
 import org.jetbrains.kotlin.modules.TargetId
+import org.jetbrains.kotlin.progress.CompilationCanceledException
+import org.jetbrains.kotlin.progress.CompilationCanceledStatus
 import org.jetbrains.kotlin.utils.addIfNotNull
 import java.io.File
 
@@ -155,5 +168,40 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
     }
 
     open fun doAfterBuild() {
+    }
+
+    abstract fun createCacheStorage(paths: BuildDataPaths): JpsIncrementalCache
+
+    abstract fun updateChunkCaches(
+        chunk: ModuleChunk,
+        dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder,
+        outputItems: Map<ModuleBuildTarget, Iterable<GeneratedFile>>,
+        incrementalCaches: Map<ModuleBuildTarget, JpsIncrementalCache>
+    )
+
+    open fun updateCaches(
+        jpsIncrementalCache: JpsIncrementalCache,
+        files: List<GeneratedFile>,
+        changesCollector: ChangesCollector,
+        environment: JpsCompilerEnvironment
+    ) {
+        jpsIncrementalCache.registerComplementaryFiles(environment.services[ExpectActualTracker::class.java] as ExpectActualTrackerImpl)
+    }
+
+    open fun makeServices(
+        builder: Services.Builder,
+        incrementalCaches: Map<ModuleBuildTarget, JpsIncrementalCache>,
+        lookupTracker: LookupTracker,
+        exceptActualTracer: ExpectActualTracker
+    ) {
+        with(builder) {
+            register(LookupTracker::class.java, lookupTracker)
+            register(ExpectActualTracker::class.java, exceptActualTracer)
+            register(CompilationCanceledStatus::class.java, object : CompilationCanceledStatus {
+                override fun checkCanceled() {
+                    if (context.cancelStatus.isCanceled) throw CompilationCanceledException()
+                }
+            })
+        }
     }
 }

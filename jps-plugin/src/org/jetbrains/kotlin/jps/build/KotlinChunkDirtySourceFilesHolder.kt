@@ -111,11 +111,8 @@ class KotlinChunkDirtySourceFilesHolder(
     fun getDirtyFiles(target: ModuleBuildTarget) =
         byTarget[target]?.dirty ?: setOf<File>()
 
-    override fun hasRemovedFiles(): Boolean =
-        byTarget.any { it.value.removed.isNotEmpty() }
-
-    val removedFilesCount
-        get() = byTarget.values.flatMapTo(mutableSetOf()) { it.removed }.size
+    fun getRemovedFilesSet(target: ModuleBuildTarget) =
+        byTarget[target]?.removed ?: setOf<File>()
 
     override fun getRemovedFiles(target: ModuleBuildTarget): Collection<String> =
         byTarget.flatMap { it.value.removed.map { it.name } }
@@ -123,7 +120,11 @@ class KotlinChunkDirtySourceFilesHolder(
     override fun hasDirtyFiles(): Boolean =
         byTarget.any { it.value.dirty.isNotEmpty() }
 
-    fun getRemovedFilesSet(target: ModuleBuildTarget) = byTarget[target]?.removed ?: setOf<File>()
+    override fun hasRemovedFiles(): Boolean =
+        byTarget.any { it.value.removed.isNotEmpty() }
+
+    val removedFilesCount
+        get() = byTarget.values.flatMapTo(mutableSetOf()) { it.removed }.size
 
     val dirtyFiles: Set<File>
         get() = byTarget.flatMapTo(mutableSetOf()) { it.value.dirty }

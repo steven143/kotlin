@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.incremental.storage.BasicStringMap
 import org.jetbrains.kotlin.incremental.storage.DirtyClassesFqNameMap
 import org.jetbrains.kotlin.incremental.storage.SourceToFqNameMap
 import org.jetbrains.kotlin.incremental.storage.StringToLongMapExternalizer
+import org.jetbrains.kotlin.load.kotlin.incremental.components.JvmPackagePartProto
 import org.jetbrains.kotlin.metadata.ProtoBuf
 import org.jetbrains.kotlin.metadata.deserialization.NameResolverImpl
 import org.jetbrains.kotlin.metadata.deserialization.getExtensionOrNull

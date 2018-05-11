@@ -10,28 +10,67 @@ import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.util.containers.ContainerUtil
 import com.intellij.util.io.URLUtil
+import gnu.trove.THashSet
 import org.jetbrains.jps.ModuleChunk
+import org.jetbrains.jps.builders.java.JavaBuilderUtil
+import org.jetbrains.jps.builders.storage.BuildDataPaths
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.ModuleBuildTarget
 import org.jetbrains.jps.model.java.JpsJavaExtensionService
 import org.jetbrains.jps.model.module.JpsSdkDependency
+import org.jetbrains.kotlin.build.GeneratedFile
+import org.jetbrains.kotlin.build.GeneratedJvmClass
 import org.jetbrains.kotlin.build.JvmSourceRoot
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
 import org.jetbrains.kotlin.compilerRunner.JpsKotlinCompilerRunner
 import org.jetbrains.kotlin.config.IncrementalCompilation
+import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.incremental.ChangesCollector
+import org.jetbrains.kotlin.incremental.IncrementalCompilationComponentsImpl
+import org.jetbrains.kotlin.incremental.IncrementalJvmCache
+import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
+import org.jetbrains.kotlin.incremental.components.LookupTracker
+import org.jetbrains.kotlin.incremental.updateIncrementalCache
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
 import org.jetbrains.kotlin.jps.build.KotlinBuilder
 import org.jetbrains.kotlin.jps.build.KotlinChunkDirtySourceFilesHolder
+import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
+import org.jetbrains.kotlin.jps.incremental.JpsIncrementalJvmCache
 import org.jetbrains.kotlin.jps.model.k2JvmCompilerArguments
 import org.jetbrains.kotlin.jps.model.kotlinCompilerSettings
+import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCache
+import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCompilationComponents
 import org.jetbrains.kotlin.modules.KotlinModuleXmlBuilder
+import org.jetbrains.kotlin.modules.TargetId
+import org.jetbrains.kotlin.utils.keysToMap
+import org.jetbrains.org.objectweb.asm.ClassReader
 import java.io.File
 import java.io.IOException
 
 class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTarget: ModuleBuildTarget) :
     KotlinModuleBuilderTarget(compileContext, jpsModuleBuildTarget) {
+
+    override fun createCacheStorage(paths: BuildDataPaths) = JpsIncrementalJvmCache(jpsModuleBuildTarget, paths)
+
+    override fun makeServices(
+        builder: Services.Builder,
+        incrementalCaches: Map<ModuleBuildTarget, JpsIncrementalCache>,
+        lookupTracker: LookupTracker,
+        exceptActualTracer: ExpectActualTracker
+    ) {
+        super.makeServices(builder, incrementalCaches, lookupTracker, exceptActualTracer)
+
+        with(builder) {
+            register(
+                IncrementalCompilationComponents::class.java,
+                IncrementalCompilationComponentsImpl(
+                    incrementalCaches.mapKeys { context.kotlinBuildTargets[it.key]!!.targetId } as Map<TargetId, IncrementalCache>
+                )
+            )
+        }
+    }
 
     override fun compileModuleChunk(
         allCompiledFiles: MutableSet<File>,
@@ -214,5 +253,65 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
             }
         }
         return result
+    }
+
+    override fun updateCaches(
+        jpsIncrementalCache: JpsIncrementalCache,
+        files: List<GeneratedFile>,
+        changesCollector: ChangesCollector,
+        environment: JpsCompilerEnvironment
+    ) {
+        super.updateCaches(jpsIncrementalCache, files, changesCollector, environment)
+
+        updateIncrementalCache(files, jpsIncrementalCache as IncrementalJvmCache, changesCollector, null)
+    }
+
+    override fun updateChunkCaches(
+        chunk: ModuleChunk,
+        dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder,
+        outputItems: Map<ModuleBuildTarget, Iterable<GeneratedFile>>,
+        incrementalCaches: Map<ModuleBuildTarget, JpsIncrementalCache>
+    ) {
+        val previousMappings = context.projectDescriptor.dataManager.mappings
+        val callback = JavaBuilderUtil.getDependenciesRegistrar(context)
+
+        val targetDirtyFiles: Map<ModuleBuildTarget, Set<File>> = chunk.targets.keysToMap {
+            val files = HashSet<File>()
+            dirtyFilesHolder.getRemovedFiles(it).mapTo(files, ::File)
+            files.addAll(dirtyFilesHolder.getDirtyFiles(it))
+            files
+        }
+
+        fun getOldSourceFiles(target: ModuleBuildTarget, generatedClass: GeneratedJvmClass): Set<File> {
+            val cache = incrementalCaches[target] ?: return emptySet()
+            cache as JpsIncrementalJvmCache
+
+            val className = generatedClass.outputClass.className
+            if (!cache.isMultifileFacade(className)) return emptySet()
+
+            val name = previousMappings.getName(className.internalName)
+            return previousMappings.getClassSources(name)?.toSet() ?: emptySet()
+        }
+
+        for ((target, outputs) in outputItems) {
+            for (output in outputs) {
+                if (output !is GeneratedJvmClass) continue
+
+                val sourceFiles = THashSet(FileUtil.FILE_HASHING_STRATEGY)
+                sourceFiles.addAll(getOldSourceFiles(target, output))
+                sourceFiles.removeAll(targetDirtyFiles[target] ?: emptySet())
+                sourceFiles.addAll(output.sourceFiles)
+
+                callback.associate(
+                    FileUtil.toSystemIndependentName(output.outputFile.canonicalPath),
+                    sourceFiles.map { FileUtil.toSystemIndependentName(it.canonicalPath) },
+                    ClassReader(output.outputClass.fileContents)
+                )
+            }
+        }
+
+        val allCompiled = dirtyFilesHolder.dirtyFiles
+        JavaBuilderUtil.registerFilesToCompile(context, allCompiled)
+        JavaBuilderUtil.registerSuccessfullyCompiled(context, allCompiled)
     }
 }

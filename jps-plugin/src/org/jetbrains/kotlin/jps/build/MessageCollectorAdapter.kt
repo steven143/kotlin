@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.jps.build
 
-import org.jetbrains.jps.ModuleChunk
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.messages.BuildMessage
 import org.jetbrains.jps.incremental.messages.CompilerMessage
@@ -17,7 +16,6 @@ import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuilderTarget
 
 class MessageCollectorAdapter(
     private val context: CompileContext,
-    private val chunk: ModuleChunk,
     val kotlinTarget: KotlinModuleBuilderTarget?
 ) : MessageCollector {
     private var hasErrors = false

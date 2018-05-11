@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.jps.platforms
 
 import org.jetbrains.jps.ModuleChunk
+import org.jetbrains.jps.builders.storage.BuildDataPaths
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.FSOperations
 import org.jetbrains.jps.incremental.ModuleBuildTarget
@@ -13,11 +14,14 @@ import org.jetbrains.jps.incremental.fs.CompilationRound
 import org.jetbrains.jps.model.library.JpsOrderRootType
 import org.jetbrains.jps.model.module.JpsModule
 import org.jetbrains.jps.util.JpsPathUtil
+import org.jetbrains.kotlin.build.GeneratedFile
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
 import org.jetbrains.kotlin.config.IncrementalCompilation
+import org.jetbrains.kotlin.incremental.ChangesCollector
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
 import org.jetbrains.kotlin.jps.build.KotlinChunkDirtySourceFilesHolder
+import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
 import org.jetbrains.kotlin.jps.model.k2MetadataCompilerArguments
 import java.io.File
 
@@ -87,5 +91,27 @@ class KotlinCommonModuleBuildTarget(context: CompileContext, jpsModuleBuildTarge
         ) {
             result.add(dependencyBuildTarget.destination)
         }
+    }
+
+    override fun createCacheStorage(paths: BuildDataPaths): JpsIncrementalCache {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun updateChunkCaches(
+        chunk: ModuleChunk,
+        dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder,
+        outputItems: Map<ModuleBuildTarget, Iterable<GeneratedFile>>,
+        incrementalCaches: Map<ModuleBuildTarget, JpsIncrementalCache>
+    ) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun updateCaches(
+        jpsIncrementalCache: JpsIncrementalCache,
+        files: List<GeneratedFile>,
+        changesCollector: ChangesCollector,
+        environment: JpsCompilerEnvironment
+    ) {
+        super.updateCaches(jpsIncrementalCache, files, changesCollector, environment)
     }
 }
