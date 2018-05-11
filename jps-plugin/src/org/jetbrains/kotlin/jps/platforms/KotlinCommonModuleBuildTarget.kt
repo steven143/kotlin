@@ -19,9 +19,12 @@ import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
 import org.jetbrains.kotlin.config.IncrementalCompilation
 import org.jetbrains.kotlin.incremental.ChangesCollector
+import org.jetbrains.kotlin.incremental.IncrementalJvmCache
+import org.jetbrains.kotlin.incremental.updateIncrementalCache
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
 import org.jetbrains.kotlin.jps.build.KotlinChunkDirtySourceFilesHolder
 import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
+import org.jetbrains.kotlin.jps.incremental.JpsIncrementalJvmCache
 import org.jetbrains.kotlin.jps.model.k2MetadataCompilerArguments
 import java.io.File
 
@@ -36,13 +39,13 @@ class KotlinCommonModuleBuildTarget(context: CompileContext, jpsModuleBuildTarge
         environment: JpsCompilerEnvironment,
         fsOperations: FSOperationsHelper
     ): Boolean {
-        require(chunk.representativeTarget() == jpsModuleBuildTarget)
-        if (reportAndSkipCircular(chunk, environment)) return false
-
-        if (!IncrementalCompilation.isEnabled()) {
-            // Mark all dependents as dirty if incremental compilation is not enabled
-            FSOperations.markDirtyRecursively(context, CompilationRound.CURRENT, chunk)
-        }
+//        require(chunk.representativeTarget() == jpsModuleBuildTarget)
+//        if (reportAndSkipCircular(chunk, environment)) return false
+//
+//        if (!IncrementalCompilation.isEnabled()) {
+//            // Mark all dependents as dirty if incremental compilation is not enabled
+//            FSOperations.markDirtyRecursively(context, CompilationRound.CURRENT, chunk)
+//        }
 
 //        JpsKotlinCompilerRunner().runK2MetadataCompiler(
 //            commonArguments,
@@ -93,9 +96,7 @@ class KotlinCommonModuleBuildTarget(context: CompileContext, jpsModuleBuildTarge
         }
     }
 
-    override fun createCacheStorage(paths: BuildDataPaths): JpsIncrementalCache {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun createCacheStorage(paths: BuildDataPaths) = JpsIncrementalJvmCache(jpsModuleBuildTarget, paths) // todo: delete
 
     override fun updateChunkCaches(
         chunk: ModuleChunk,
@@ -103,15 +104,6 @@ class KotlinCommonModuleBuildTarget(context: CompileContext, jpsModuleBuildTarge
         outputItems: Map<ModuleBuildTarget, Iterable<GeneratedFile>>,
         incrementalCaches: Map<ModuleBuildTarget, JpsIncrementalCache>
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
-    override fun updateCaches(
-        jpsIncrementalCache: JpsIncrementalCache,
-        files: List<GeneratedFile>,
-        changesCollector: ChangesCollector,
-        environment: JpsCompilerEnvironment
-    ) {
-        super.updateCaches(jpsIncrementalCache, files, changesCollector, environment)
     }
 }

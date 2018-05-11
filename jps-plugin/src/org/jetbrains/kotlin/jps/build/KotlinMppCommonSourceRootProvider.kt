@@ -32,11 +32,10 @@ class KotlinMppCommonSourceRootProvider : AdditionalRootsProviderService<JavaSou
         val result = mutableListOf<JavaSourceRootDescriptor>()
 
         module.expectedByModules.forEach { module ->
-            // Note, production sources should be added for both production and tests targets
-            result.addSourceRoots(module, JavaSourceRootType.SOURCE, target)
-
             if (moduleBuildTarget.isTests) {
                 result.addSourceRoots(module, JavaSourceRootType.TEST_SOURCE, target)
+            } else {
+                result.addSourceRoots(module, JavaSourceRootType.SOURCE, target)
             }
         }
 

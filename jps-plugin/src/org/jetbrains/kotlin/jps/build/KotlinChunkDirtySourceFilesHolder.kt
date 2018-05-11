@@ -83,7 +83,7 @@ class KotlinChunkDirtySourceFilesHolder(
         }
     }
 
-    private val byTarget: Map<ModuleBuildTarget, TargetFiles> by lazy {
+    val byTarget: Map<ModuleBuildTarget, TargetFiles> by lazy {
         val result = mutableMapOf<ModuleBuildTarget, TargetFiles>()
         for (target in chunk.targets) {
             val dirty: MutableSet<File> = mutableSetOf()
@@ -103,7 +103,7 @@ class KotlinChunkDirtySourceFilesHolder(
         result
     }
 
-    private class TargetFiles(
+    class TargetFiles(
         val dirty: MutableSet<File>,
         val removed: MutableSet<File>
     )

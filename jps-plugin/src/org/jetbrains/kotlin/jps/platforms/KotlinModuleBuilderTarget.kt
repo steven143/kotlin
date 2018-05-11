@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.jps.platforms
 
 import org.jetbrains.jps.ModuleChunk
-import org.jetbrains.jps.builders.BuildRootDescriptor
 import org.jetbrains.jps.builders.storage.BuildDataPaths
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.ModuleBuildTarget
@@ -23,7 +22,6 @@ import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.incremental.ChangesCollector
 import org.jetbrains.kotlin.incremental.ExpectActualTrackerImpl
-import org.jetbrains.kotlin.incremental.IncrementalCompilationComponentsImpl
 import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
@@ -33,8 +31,6 @@ import org.jetbrains.kotlin.jps.build.isKotlinSourceFile
 import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
 import org.jetbrains.kotlin.jps.model.productionOutputFilePath
 import org.jetbrains.kotlin.jps.model.testOutputFilePath
-import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCache
-import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCompilationComponents
 import org.jetbrains.kotlin.modules.TargetId
 import org.jetbrains.kotlin.progress.CompilationCanceledException
 import org.jetbrains.kotlin.progress.CompilationCanceledStatus
@@ -103,18 +99,6 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
             collectSources(result)
         }
     }
-
-    val sourceFiles by lazy {
-        sources.values.map { it.file }
-    }
-
-    class Source(val file: File, val isCommonModule: Boolean)
-
-    val sourceRootType: JavaSourceRootType
-        get() = if (isTests) JavaSourceRootType.TEST_SOURCE else JavaSourceRootType.SOURCE
-
-    fun isCommonModuleFile(path: String): Boolean = sources[path]?.isCommonModule == true
-
     private fun collectSources(receiver: MutableMap<String, Source>) {
         val moduleExcludes = module.excludeRootsList.urls.mapTo(java.util.HashSet(), JpsPathUtil::urlToFile)
 
@@ -123,18 +107,37 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
             .compilerExcludes
 
         val buildRootIndex = context.projectDescriptor.buildRootIndex
-        module.getSourceRoots(sourceRootType).forEach { sourceRoot ->
-            sourceRoot.file.walkTopDown()
-                .onEnter { it !in moduleExcludes }
-                .forEach {
-                    if (!compilerExcludes.isExcluded(it) && it.isFile && it.isKotlinSourceFile) {
-                        val rootDescriptors = buildRootIndex.getRootDescriptors<BuildRootDescriptor>(it, null, context)
+        val roots = buildRootIndex.getTargetRoots(jpsModuleBuildTarget, context)
+        roots.forEach { rootDescriptor ->
+            val isCommonRoot = rootDescriptor is KotlinCommonModuleSourceRoot
 
-                        receiver[it.path] = Source(it, rootDescriptors.any { it is KotlinCommonModuleSourceRoot })
+            rootDescriptor.root.walkTopDown()
+                .onEnter { file -> file !in moduleExcludes }
+                .forEach { file ->
+                    if (!compilerExcludes.isExcluded(file) && file.isFile && file.isKotlinSourceFile) {
+                        receiver[file.path] = Source(file, isCommonRoot)
                     }
                 }
+
         }
     }
+
+    /**
+     * @property isCommonModule for reporting errors during cross-compilation common module sources
+     */
+    class Source(
+        val file: File,
+        val isCommonModule: Boolean
+    )
+
+    fun isCommonModuleFile(path: String): Boolean = sources[path]?.isCommonModule == true
+
+    val sourceFiles by lazy {
+        sources.values.map { it.file }
+    }
+
+    val sourceRootType: JavaSourceRootType
+        get() = if (isTests) JavaSourceRootType.TEST_SOURCE else JavaSourceRootType.SOURCE
 
     override fun toString() = jpsModuleBuildTarget.toString()
 
@@ -185,7 +188,8 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
         changesCollector: ChangesCollector,
         environment: JpsCompilerEnvironment
     ) {
-        jpsIncrementalCache.registerComplementaryFiles(environment.services[ExpectActualTracker::class.java] as ExpectActualTrackerImpl)
+        val expectActualTracker = environment.services[ExpectActualTracker::class.java] as ExpectActualTrackerImpl
+        jpsIncrementalCache.registerComplementaryFiles(expectActualTracker)
     }
 
     open fun makeServices(

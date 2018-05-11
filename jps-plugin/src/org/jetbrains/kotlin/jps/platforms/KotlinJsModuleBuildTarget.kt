@@ -62,12 +62,12 @@ class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTa
         with(builder) {
             register(IncrementalResultsConsumer::class.java, IncrementalResultsConsumerImpl())
 
-            if (IncrementalCompilation.isEnabled()) {
-                register(
-                    IncrementalDataProvider::class.java,
-                    IncrementalDataProviderFromCache(incrementalCaches[jpsModuleBuildTarget] as IncrementalJsCache)
-                )
-            }
+//            if (IncrementalCompilation.isEnabled()) {
+//                register(
+//                    IncrementalDataProvider::class.java,
+//                    IncrementalDataProviderFromCache(incrementalCaches[jpsModuleBuildTarget] as IncrementalJsCache)
+//                )
+//            }
         }
     }
 

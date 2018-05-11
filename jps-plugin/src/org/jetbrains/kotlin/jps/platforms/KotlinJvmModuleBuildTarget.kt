@@ -152,7 +152,6 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
             val jpsModuleTarget = target.jpsModuleBuildTarget
             val moduleSources =
                 if (IncrementalCompilation.isEnabled()) {
-                    // todo: add all required files with correspond `expected by`/`actual` declarations
                     dirtyFilesHolder.getDirtyFiles(jpsModuleTarget)
                 } else target.sourceFiles
 
