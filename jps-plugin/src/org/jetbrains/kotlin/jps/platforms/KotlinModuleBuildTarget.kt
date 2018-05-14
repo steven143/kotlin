@@ -19,15 +19,13 @@ import org.jetbrains.kotlin.build.GeneratedFile
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
+import org.jetbrains.kotlin.config.IncrementalCompilation
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.incremental.ChangesCollector
 import org.jetbrains.kotlin.incremental.ExpectActualTrackerImpl
 import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
 import org.jetbrains.kotlin.incremental.components.LookupTracker
-import org.jetbrains.kotlin.jps.build.FSOperationsHelper
-import org.jetbrains.kotlin.jps.build.KotlinChunkDirtySourceFilesHolder
-import org.jetbrains.kotlin.jps.build.KotlinCommonModuleSourceRoot
-import org.jetbrains.kotlin.jps.build.isKotlinSourceFile
+import org.jetbrains.kotlin.jps.build.*
 import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
 import org.jetbrains.kotlin.jps.model.productionOutputFilePath
 import org.jetbrains.kotlin.jps.model.testOutputFilePath
@@ -40,7 +38,7 @@ import java.io.File
 /**
  * Properties and actions for Kotlin test / production module build target.
  */
-abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsModuleBuildTarget: ModuleBuildTarget) {
+abstract class KotlinModuleBuildTarget(val context: CompileContext, val jpsModuleBuildTarget: ModuleBuildTarget) {
     val module: JpsModule
         get() = jpsModuleBuildTarget.module
 
@@ -69,9 +67,9 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
                 ?: throw ProjectBuildException("No output directory found for " + this)
     }
 
-    val friendBuildTargets: List<KotlinModuleBuilderTarget>
+    val friendBuildTargets: List<KotlinModuleBuildTarget>
         get() {
-            val result = mutableListOf<KotlinModuleBuilderTarget>()
+            val result = mutableListOf<KotlinModuleBuildTarget>()
 
             if (isTests) {
                 result.addIfNotNull(context.kotlinBuildTargets[module.productionBuildTarget])
@@ -99,6 +97,7 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
             collectSources(result)
         }
     }
+
     private fun collectSources(receiver: MutableMap<String, Source>) {
         val moduleExcludes = module.excludeRootsList.urls.mapTo(java.util.HashSet(), JpsPathUtil::urlToFile)
 
@@ -207,5 +206,48 @@ abstract class KotlinModuleBuilderTarget(val context: CompileContext, val jpsMod
                 }
             })
         }
+    }
+
+    protected fun collectSourcesToCompile(dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder) =
+        collectSourcesToCompile(this, dirtyFilesHolder)
+
+    /**
+     * Should be used only for particular target in chunk (jvm)
+     */
+    protected fun collectSourcesToCompile(
+        target: KotlinModuleBuildTarget,
+        dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder
+    ): Collection<File> {
+        // Should not be cached since may be vary in different rounds
+
+        val jpsModuleTarget = target.jpsModuleBuildTarget
+        val moduleSources =
+            if (IncrementalCompilation.isEnabled()) {
+                dirtyFilesHolder.getDirtyFiles(jpsModuleTarget)
+            } else target.sourceFiles
+        return moduleSources
+    }
+
+    protected fun checkShouldCompileAndLog(dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder, moduleSources: Collection<File>) =
+        checkShouldCompileAndLog(this, dirtyFilesHolder, moduleSources)
+
+    /**
+     * Should be used only for particular target in chunk (jvm)
+     */
+    protected fun checkShouldCompileAndLog(
+        target: KotlinModuleBuildTarget,
+        dirtyFilesHolder: KotlinChunkDirtySourceFilesHolder,
+        moduleSources: Collection<File>
+    ): Boolean {
+        val hasRemovedSources = dirtyFilesHolder.getRemovedFiles(target.jpsModuleBuildTarget).isNotEmpty()
+        val hasDirtyOrRemovedSources = moduleSources.isNotEmpty() || hasRemovedSources
+        if (hasDirtyOrRemovedSources) {
+            val logger = context.loggingManager.projectBuilderLogger
+            if (logger.isEnabled) {
+                logger.logCompiledFiles(moduleSources, KotlinBuilder.KOTLIN_BUILDER_NAME, "Compiling files:")
+            }
+        }
+
+        return hasDirtyOrRemovedSources
     }
 }

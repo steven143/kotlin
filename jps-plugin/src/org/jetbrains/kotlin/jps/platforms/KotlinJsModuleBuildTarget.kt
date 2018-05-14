@@ -34,7 +34,6 @@ import org.jetbrains.kotlin.jps.model.k2JsCompilerArguments
 import org.jetbrains.kotlin.jps.model.kotlinCompilerSettings
 import org.jetbrains.kotlin.jps.model.productionOutputFilePath
 import org.jetbrains.kotlin.jps.model.testOutputFilePath
-import org.jetbrains.kotlin.load.kotlin.incremental.components.IncrementalCache
 import org.jetbrains.kotlin.utils.JsLibraryUtils
 import org.jetbrains.kotlin.utils.KotlinJavascriptMetadataUtils.JS_EXT
 import org.jetbrains.kotlin.utils.KotlinJavascriptMetadataUtils.META_JS_SUFFIX
@@ -44,12 +43,19 @@ import java.net.URI
 internal class IncrementalDataProviderFromCache(private val cache: IncrementalJsCache) : IncrementalDataProvider {
     override val headerMetadata: ByteArray
         get() = cache.header
+
     override val compiledPackageParts: Map<File, TranslationResultValue>
         get() = cache.nonDirtyPackageParts()
 }
 
 class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTarget: ModuleBuildTarget) :
-    KotlinModuleBuilderTarget(compileContext, jpsModuleBuildTarget) {
+    KotlinModuleBuildTarget(compileContext, jpsModuleBuildTarget) {
+
+    val sourceToOutputMap
+        get() = context.projectDescriptor.dataManager.getSourceToOutputMap(jpsModuleBuildTarget)
+
+    val isFirstBuild
+        get() = sourceToOutputMap.sources.isEmpty()
 
     override fun makeServices(
         builder: Services.Builder,
@@ -62,12 +68,14 @@ class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTa
         with(builder) {
             register(IncrementalResultsConsumer::class.java, IncrementalResultsConsumerImpl())
 
-//            if (IncrementalCompilation.isEnabled()) {
-//                register(
-//                    IncrementalDataProvider::class.java,
-//                    IncrementalDataProviderFromCache(incrementalCaches[jpsModuleBuildTarget] as IncrementalJsCache)
-//                )
-//            }
+            if (IncrementalCompilation.isEnabled() && !isFirstBuild) {
+                val cache = incrementalCaches[jpsModuleBuildTarget] as IncrementalJsCache
+
+                register(
+                    IncrementalDataProvider::class.java,
+                    IncrementalDataProviderFromCache(cache)
+                )
+            }
         }
     }
 
@@ -82,8 +90,8 @@ class KotlinJsModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildTa
         require(chunk.representativeTarget() == jpsModuleBuildTarget)
         if (reportAndSkipCircular(chunk, environment)) return false
 
-        val sources = sourceFiles
-        if (sources.isEmpty()) return false
+        val sources = collectSourcesToCompile(dirtyFilesHolder)
+        if (!checkShouldCompileAndLog(dirtyFilesHolder, sources)) return false
 
         val libraries = libraryFiles + dependenciesMetaFiles
 

@@ -24,7 +24,7 @@ import org.jetbrains.jps.builders.impl.DirtyFilesHolderBase
 import org.jetbrains.jps.builders.java.JavaSourceRootDescriptor
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.ModuleBuildTarget
-import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuilderTarget
+import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuildTarget
 import java.io.File
 
 /**
@@ -36,7 +36,7 @@ class KotlinDirtySourceFilesHolder(
     val dirtyFilesHolder: DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget>,
     val chunk: ModuleChunk,
     val context: CompileContext,
-    val kotlinTarget: KotlinModuleBuilderTarget?
+    val kotlinTarget: KotlinModuleBuildTarget?
 ) : DirtyFilesHolderBase<JavaSourceRootDescriptor, ModuleBuildTarget>(context) {
     private val fsState get() = context.projectDescriptor.fsState
     private val scope get() = context.scope

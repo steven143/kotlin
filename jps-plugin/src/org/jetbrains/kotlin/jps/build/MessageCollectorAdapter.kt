@@ -12,11 +12,11 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerRunnerConstants
-import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuilderTarget
+import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuildTarget
 
 class MessageCollectorAdapter(
     private val context: CompileContext,
-    val kotlinTarget: KotlinModuleBuilderTarget?
+    val kotlinTarget: KotlinModuleBuildTarget?
 ) : MessageCollector {
     private var hasErrors = false
 

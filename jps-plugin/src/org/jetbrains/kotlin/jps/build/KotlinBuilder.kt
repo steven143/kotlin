@@ -53,7 +53,7 @@ import org.jetbrains.kotlin.jps.incremental.*
 import org.jetbrains.kotlin.jps.model.kotlinCompilerArguments
 import org.jetbrains.kotlin.jps.platforms.KotlinCommonModuleBuildTarget
 import org.jetbrains.kotlin.jps.platforms.KotlinJsModuleBuildTarget
-import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuilderTarget
+import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuildTarget
 import org.jetbrains.kotlin.jps.platforms.kotlinBuildTargets
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.preloading.ClassCondition
@@ -303,7 +303,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
     private fun doBuild(
         chunk: ModuleChunk,
-        kotlinTarget: KotlinModuleBuilderTarget?,
+        kotlinTarget: KotlinModuleBuildTarget?,
         context: CompileContext,
         dirtyFilesHolder: DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget>,
         messageCollector: MessageCollectorAdapter,
@@ -538,7 +538,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
     private fun doCompileModuleChunk(
         allCompiledFiles: MutableSet<File>,
         chunk: ModuleChunk,
-        kotlinTarget: KotlinModuleBuilderTarget?,
+        kotlinTarget: KotlinModuleBuildTarget?,
         commonArguments: CommonCompilerArguments,
         context: CompileContext,
         chunkDirtyFilesHolder: KotlinChunkDirtySourceFilesHolder,
@@ -597,7 +597,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
     }
 
     private fun createCompileEnvironment(
-        kotlinModuleBuilderTarget: KotlinModuleBuilderTarget,
+        kotlinModuleBuilderTarget: KotlinModuleBuildTarget,
         incrementalCaches: Map<ModuleBuildTarget, JpsIncrementalCache>,
         lookupTracker: LookupTracker,
         exceptActualTracer: ExpectActualTracker,
@@ -749,12 +749,14 @@ private fun getIncrementalCaches(
 
     val dataManager = context.projectDescriptor.dataManager
     val kotlinBuildTargets = context.kotlinBuildTargets
+
     val chunkCaches = chunk.targets.keysToMapExceptNulls {
         val kotlinModuleBuilderTarget = kotlinBuildTargets[it]
         if (kotlinModuleBuilderTarget !is KotlinCommonModuleBuildTarget) {
             dataManager.getKotlinCache(kotlinBuildTargets[it]!!)
         } else null
     }
+
     val dependentCaches = dependentTargets.mapNotNull {
         val kotlinModuleBuilderTarget = kotlinBuildTargets[it]
         if (kotlinModuleBuilderTarget !is KotlinCommonModuleBuildTarget) {
