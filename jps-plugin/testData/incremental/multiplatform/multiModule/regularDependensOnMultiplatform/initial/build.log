@@ -1,10 +1,15 @@
 Building c
-Exit code: OK
-------------------------------------------
 Building pJs
+Compiling files:
+  c/src/serviceCHeader.kt
+  pJs/src/serviceImpl.kt
+End of files
 Exit code: OK
 ------------------------------------------
 Building rJs
+Compiling files:
+  rJs/src/serviceImpl.kt
+End of files
 Exit code: OK
 ------------------------------------------
 Building pJvm
@@ -25,7 +30,11 @@ Compiling files:
   c/src/serviceCHeader.kt
   pJvm/src/serviceImpl.kt
 End of files
-Exit code: OK
+Marked as dirty by Kotlin:
+  c/src/serviceCHeader.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
+------------------------------------------
+Exit code: NOTHING_DONE
 ------------------------------------------
 Building rJvm
 Compiling files:

@@ -1,24 +1,12 @@
 ================ Step #1 =================
 
 Building c
+Building pJs
 Exit code: NOTHING_DONE
 ------------------------------------------
-Cleaning output files:
-  out/production/pJs/pJs.js
-  out/production/pJs/pJs.meta.js
-  out/production/pJs/pJs/root-package.kjsm
-End of files
-Building pJs
-Exit code: OK
-------------------------------------------
-Cleaning output files:
-  out/production/pJvm/META-INF/pJvm.kotlin_module
-  out/production/pJvm/ServiceCHeaderKt.class
-End of files
 Building pJvm
 Compiling files:
-  c/src/serviceCHeader.kt
-  pJvm/src/serviceImpl.kt
+  pJvm/src/serviceNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -26,15 +14,16 @@ Exit code: OK
 ================ Step #2 =================
 
 Building c
-Exit code: NOTHING_DONE
-------------------------------------------
 Building pJs
 Exit code: NOTHING_DONE
 ------------------------------------------
 Building pJvm
+Cleaning output files:
+  out/production/pJvm/META-INF/pJvm.kotlin_module
+  out/production/pJvm/ServiceNewImplKt.class
+End of files
 Compiling files:
-  c/src/serviceCHeader.kt
-  pJvm/src/serviceImpl.kt
+  pJvm/src/serviceNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -42,19 +31,15 @@ Exit code: OK
 ================ Step #3 =================
 
 Building c
-Exit code: NOTHING_DONE
-------------------------------------------
 Building pJs
 Exit code: NOTHING_DONE
 ------------------------------------------
 Cleaning output files:
   out/production/pJvm/META-INF/pJvm.kotlin_module
-  out/production/pJvm/ServiceCHeaderKt.class
+  out/production/pJvm/ServiceNewImplKt.class
 End of files
 Building pJvm
 Compiling files:
-  c/src/serviceCHeader.kt
-  pJvm/src/serviceImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------

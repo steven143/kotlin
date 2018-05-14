@@ -1,13 +1,17 @@
 Building ac
-Exit code: OK
-------------------------------------------
 Building bc
-Exit code: OK
-------------------------------------------
 Building aJs
+Compiling files:
+  aJs/src/serviceImpl.kt
+  ac/src/serviceAcHeader.kt
+End of files
 Exit code: OK
 ------------------------------------------
 Building bJs
+Compiling files:
+  bJs/src/serviceImpl.kt
+  bc/src/serviceBcHeader.kt
+End of files
 Exit code: OK
 ------------------------------------------
 Building aJvm
@@ -28,7 +32,11 @@ Compiling files:
   aJvm/src/serviceImpl.kt
   ac/src/serviceAcHeader.kt
 End of files
-Exit code: OK
+Marked as dirty by Kotlin:
+  ac/src/serviceAcHeader.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
+------------------------------------------
+Exit code: NOTHING_DONE
 ------------------------------------------
 Building bJvm
 Compiling files:
@@ -48,5 +56,9 @@ Compiling files:
   bJvm/src/serviceImpl.kt
   bc/src/serviceBcHeader.kt
 End of files
-Exit code: OK
+Marked as dirty by Kotlin:
+  bc/src/serviceBcHeader.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
+------------------------------------------
+Exit code: NOTHING_DONE
 ------------------------------------------
