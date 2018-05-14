@@ -3,10 +3,12 @@
 // from `incremental/multiplatform/multiModule/simple/dependencies.txt`
 //
 
-fun pJvm_platformOnlyNew() = "pJvm.new.1"
+actual fun c_platformDependentCNew(): String = "pJvm.touch.3"
+fun pJvm_platformOnlyNew() = "pJvm.touch.3"
 
 fun TestPJvmNew() {
   pJvm_platformOnlyNew()
   PJvmNewJavaClass().doStuff()
-  c_platformIndependentC()
+  c_platformIndependentCNew()
+  c_platformDependentCNew()
 }

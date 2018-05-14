@@ -1,6 +1,7 @@
-c [common]
-pJvm [jvm]
-pJs [js]
+c [common, edit, editExceptActual]
 
-pJvm->c [expectedBy]
-pJs->c [expectedBy]
+pJvm [jvm, edit, editJvm]
+pJvm -> c [expectedBy]
+
+pJs [js, edit]
+pJs -> c [expectedBy]
