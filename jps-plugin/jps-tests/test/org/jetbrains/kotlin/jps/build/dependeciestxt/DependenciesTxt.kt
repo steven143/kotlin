@@ -19,6 +19,10 @@ import org.jetbrains.kotlin.jps.build.dependeciestxt.generated.DependenciesTxtLe
 import org.jetbrains.kotlin.jps.build.dependeciestxt.generated.DependenciesTxtParser
 import org.jetbrains.kotlin.jps.build.dependeciestxt.generated.DependenciesTxtParser.*
 import java.io.File
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
 
 /**
  * Dependencies description file.
@@ -50,9 +54,24 @@ data class DependenciesTxt(
         val expectedBy
             get() = dependencies.filter { it.expectedBy }
 
-        val generateEditingTests: Boolean
-            get() = true
+        @Flag
+        var edit: Boolean = false
+
+        @Flag
+        var editJvm: Boolean = false
+
+        @Flag
+        var editExceptActual: Boolean = false
+
+        companion object {
+            val flags: Map<String, KMutableProperty1<Module, Boolean>> = Module::class.memberProperties
+                .filter { it.findAnnotation<Flag>() != null }
+                .filterIsInstance<KMutableProperty1<Module, Boolean>>()
+                .associateBy { it.name }
+        }
     }
+
+    annotation class Flag
 
     data class Dependency(
         val from: Module,
@@ -154,7 +173,11 @@ class DependenciesTxtBuilder {
                     "common" -> kotlinFacetSettings.compilerArguments = K2MetadataCompilerArguments()
                     "jvm" -> kotlinFacetSettings.compilerArguments = K2JVMCompilerArguments()
                     "js" -> kotlinFacetSettings.compilerArguments = K2JSCompilerArguments()
-                    else -> error("Unknown module flag `$key`")
+                    else -> {
+                        val flagProperty = DependenciesTxt.Module.flags[key]
+                        if (flagProperty != null) flagProperty.set(module, true)
+                        else error("Unknown module flag `$key`")
+                    }
                 }
             } else error("Unknown module property `$key`")
         }
