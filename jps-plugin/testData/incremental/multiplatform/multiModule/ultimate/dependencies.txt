@@ -1,0 +1,122 @@
+//
+// Let we have this depend module groups:
+//
+//  RB -> RA
+//  A -> RA
+//  B -> RB
+//  B -> A
+//  R -> B (and R -> A, transitively)
+//
+// RA and RB is regular module groups.
+// Each groups contains 2 jvm and 2 js regular modules (server and client).
+//
+// In A and B module groups this cases are covered:
+// - one platform module provides actual definitions for two common modules
+// - one common module has actual declarations for 2 jvm and 2 js platforms (server and client)
+// therefor each module group itself contains 3 module subgroups: common, client and server
+// which in turn contains common, jvm and js modules
+//
+// R is regular module depends on B (and on A, transitively)
+//
+
+//////  RA //////
+
+raJvmClient [jvm]
+raJvmServer [jvm]
+raJsClient [js]
+raJsServer [js]
+
+////// RB //////
+
+rbJvmClient [jvm]
+rbJvmClient -> raJvmClient [compile]
+
+rbJvmServer [jvm]
+rbJvmServer -> raJvmServer [compile]
+
+rbJsClient [js]
+rbJsClient -> raJsClient [compile]
+
+rbJsServer [js]
+rbJsServer -> raJsServer [compile]
+
+////// A //////
+
+ac [common]
+
+acClient [common]
+acClient -> ac [compile]
+
+acServer [common]
+acServer -> ac [compile]
+
+aJvmClient [jvm]
+aJvmClient -> ac [expectedBy]
+aJvmClient -> acClient [expectedBy]
+aJvmClient -> raJvmClient [compile]
+
+aJvmServer [jvm]
+aJvmServer -> ac [expectedBy]
+aJvmServer -> acServer [expectedBy]
+aJvmServer -> raJvmServer [compile]
+
+aJsClient [js]
+aJsClient -> ac [expectedBy]
+aJsClient -> acClient [expectedBy]
+aJsClient -> raJsClient [compile]
+
+aJsServer [js]
+aJsServer -> ac [expectedBy]
+aJsServer -> acServer [expectedBy]
+aJsServer -> raJsServer [compile]
+
+////// B //////
+
+bc [common]
+bc -> ac [compile]
+
+bcClient [common]
+bcClient -> bc [compile]
+bcClient -> acClient [compile]
+
+bcServer [common]
+bcServer -> bc [compile]
+bcServer -> acServer [compile]
+
+bJvmClient [jvm]
+bJvmClient -> bc [expectedBy]
+bJvmClient -> bcClient [expectedBy]
+bJvmClient -> aJvmClient [compile]
+bJvmClient -> rbJvmClient [compile]
+
+bJvmServer [jvm]
+bJvmServer -> bc [expectedBy]
+bJvmServer -> bcServer [expectedBy]
+bJvmServer -> aJvmServer [compile]
+bJvmServer -> rbJvmServer [compile]
+
+bJsClient [js]
+bJsClient -> bc [expectedBy]
+bJsClient -> bcClient [expectedBy]
+bJsClient -> aJsClient [compile]
+bJsClient -> rbJsClient [compile]
+
+bJsServer [js]
+bJsServer -> bc [expectedBy]
+bJsServer -> bcServer [expectedBy]
+bJsServer -> aJsServer [compile]
+bJsServer -> rbJsServer [compile]
+
+////// R //////
+
+rJvmClient [jvm]
+rJvmClient -> bJvmClient [compile]
+
+rJvmServer [jvm]
+rJvmServer -> bJvmServer [compile]
+
+rJsClient [js]
+rJsClient -> bJsClient [compile]
+
+rJsServer [js]
+rJsServer -> bJsServer [compile]

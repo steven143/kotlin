@@ -223,8 +223,7 @@ public class CliTestGenerated extends AbstractCliTest {
 
         @TestMetadata("importsProducer.args")
         public void testImportsProducer() throws Exception {
-            String fileName = KotlinTestUtils.navigationMetadata("compiler/testData/cli/jvm/importsProducer.args");
-            doJvmTest(fileName);
+            runTest("compiler/testData/cli/jvm/importsProducer.args");
         }
 
         @TestMetadata("inlineCycle.args")

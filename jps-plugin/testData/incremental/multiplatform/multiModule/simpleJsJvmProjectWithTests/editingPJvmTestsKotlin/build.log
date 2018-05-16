@@ -1,0 +1,56 @@
+================ Step #1 =================
+
+Building cMain
+Building pJsMain
+Exit code: NOTHING_DONE
+------------------------------------------
+Building pJvmMain
+Exit code: NOTHING_DONE
+------------------------------------------
+Building cTests
+Building pJsTests
+Exit code: NOTHING_DONE
+------------------------------------------
+Building pJvmTests
+Compiling files:
+  pJvmTests/src/serviceNewImpl.kt
+End of files
+Exit code: OK
+------------------------------------------
+
+================ Step #2 =================
+
+Building cMain
+Building pJsMain
+Exit code: NOTHING_DONE
+------------------------------------------
+Building pJvmMain
+Exit code: NOTHING_DONE
+------------------------------------------
+Building cTests
+Building pJsTests
+Exit code: NOTHING_DONE
+------------------------------------------
+Building pJvmTests
+Compiling files:
+  pJvmTests/src/serviceNewImpl.kt
+End of files
+Exit code: OK
+------------------------------------------
+
+================ Step #3 =================
+
+Building cMain
+Building pJsMain
+Exit code: NOTHING_DONE
+------------------------------------------
+Building pJvmMain
+Exit code: NOTHING_DONE
+------------------------------------------
+Building cTests
+Building pJsTests
+Exit code: NOTHING_DONE
+------------------------------------------
+Building pJvmTests
+Exit code: NOTHING_DONE
+------------------------------------------
