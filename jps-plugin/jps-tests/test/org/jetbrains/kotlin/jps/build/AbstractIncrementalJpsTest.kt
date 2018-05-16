@@ -401,17 +401,27 @@ abstract class AbstractIncrementalJpsTest(
     protected open fun performAdditionalModifications(modifications: List<Modification>) {
     }
 
+    protected open fun prepareModuleSources(module: DependenciesTxt.Module? = null) {
+        if (module != null) {
+            prepareModuleSourcesByName("${module.name}/src", "${module.name}_")
+        } else {
+            prepareModuleSourcesByName("src", "")
+        }
+    }
+
+    protected fun prepareIndexedModuleSources(module: DependenciesTxt.Module) {
+        prepareModuleSourcesByName("${module.name}/src", "${module.indexedName}_")
+    }
+
+    private fun prepareModuleSourcesByName(sourceDirName: String, filePrefix: String) {
+        val sourceDestinationDir = File(workDir, sourceDirName)
+        val sourcesMapping = copyTestSources(testDataDir, sourceDestinationDir, filePrefix)
+        mapWorkingToOriginalFile.putAll(sourcesMapping)
+        preProcessSources(sourceDestinationDir)
+    }
+
     // null means one module
     protected fun configureModules(): Set<String>? {
-        fun prepareModuleSources(moduleName: String?) {
-            val sourceDirName = moduleName?.let { "$it/src" } ?: "src"
-            val filePrefix = moduleName?.let { "${it}_" } ?: ""
-            val sourceDestinationDir = File(workDir, sourceDirName)
-            val sourcesMapping = copyTestSources(testDataDir, sourceDestinationDir, filePrefix)
-            mapWorkingToOriginalFile.putAll(sourcesMapping)
-            preProcessSources(sourceDestinationDir)
-        }
-
         val outputUrl = JpsPathUtil.pathToUrl(getAbsolutePath("out"))
         JpsJavaExtensionService.getInstance().getOrCreateProjectExtension(myProject).outputUrl = outputUrl
 
@@ -422,7 +432,7 @@ abstract class AbstractIncrementalJpsTest(
         val moduleNames: Set<String>?
         if (dependenciesTxt == null) {
             addModule("module", arrayOf(getAbsolutePath("src")), null, null, jdk)
-            prepareModuleSources(moduleName = null)
+            prepareModuleSources(module = null)
             moduleNames = null
         } else {
             dependenciesTxt.modules.forEach {
@@ -462,7 +472,7 @@ abstract class AbstractIncrementalJpsTest(
             }
 
             dependenciesTxt.modules.forEach {
-                prepareModuleSources(it.name)
+                prepareModuleSources(it)
             }
 
             moduleNames = dependenciesTxt.modules.map { it.name }.toSet()

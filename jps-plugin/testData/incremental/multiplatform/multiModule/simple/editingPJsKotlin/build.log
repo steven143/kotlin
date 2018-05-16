@@ -3,7 +3,7 @@
 Building c
 Building pJs
 Compiling files:
-  pJs/src/serviceNewImpl.kt
+  pJs/src/servicePJsNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -21,7 +21,7 @@ Cleaning output files:
   out/production/pJs/pJs/root-package.kjsm
 End of files
 Compiling files:
-  pJs/src/serviceNewImpl.kt
+  pJs/src/servicePJsNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------

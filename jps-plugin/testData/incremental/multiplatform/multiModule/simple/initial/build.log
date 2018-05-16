@@ -2,14 +2,14 @@ Building c
 Building pJs
 Compiling files:
   c/src/serviceCHeader.kt
-  pJs/src/serviceImpl.kt
+  pJs/src/servicePJsImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
 Building pJvm
 Compiling files:
   c/src/serviceCHeader.kt
-  pJvm/src/serviceImpl.kt
+  pJvm/src/servicePJvmImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -18,11 +18,11 @@ Compiling files:
 End of files
 Cleaning output files:
   out/production/pJvm/META-INF/pJvm.kotlin_module
-  out/production/pJvm/ServiceImplKt.class
+  out/production/pJvm/ServicePJvmImplKt.class
 End of files
 Compiling files:
   c/src/serviceCHeader.kt
-  pJvm/src/serviceImpl.kt
+  pJvm/src/servicePJvmImpl.kt
 End of files
 Marked as dirty by Kotlin:
   c/src/serviceCHeader.kt

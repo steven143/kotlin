@@ -251,7 +251,7 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
                 val extension = file.extension
 
                 // Don't filter out files, we want to report warnings about absence through the common place
-                if (!(extension == "class" || extension == "jar")) {
+                if (extension != "class" && extension != "jar") {
                     return@filter false
                 }
             }

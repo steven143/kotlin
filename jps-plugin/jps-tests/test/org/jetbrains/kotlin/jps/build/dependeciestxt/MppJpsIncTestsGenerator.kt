@@ -96,7 +96,9 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
     }
 
     data class ModuleContentSettings(
+        val module: DependenciesTxt.Module,
         val serviceNameSuffix: String = "",
+        val generateActualDeclarationsFor: List<DependenciesTxt.Module> = module.expectedBy.map { it.to },
         val generatePlatformDependent: Boolean = true,
         val generateKtFile: Boolean = true,
         val generateJavaFile: Boolean = true
@@ -107,7 +109,7 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
         private val modules = mutableMapOf<DependenciesTxt.Module, ModuleContentSettings>()
 
         var DependenciesTxt.Module.contentsSettings: ModuleContentSettings
-            get() = modules.getOrPut(this) { ModuleContentSettings() }
+            get() = modules.getOrPut(this) { ModuleContentSettings(this) }
             set(value) {
                 modules[this] = value
             }
@@ -118,6 +120,7 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
             // create new file with service implementation
             // don't create expect/actual functions (generatePlatformDependent = false)
             module.contentsSettings = ModuleContentSettings(
+                module,
                 serviceNameSuffix = "New",
                 generatePlatformDependent = false,
                 generateKtFile = !changeJavaClass,
@@ -163,14 +166,18 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
             }
         }
 
-        fun generateEditingExpectActual(module: DependenciesTxt.Module) {
+        fun generateEditingExpectActual(commonModule: DependenciesTxt.Module) {
             generateBaseContent()
-            check(module.isCommonModule)
-            val impls = module.usages.filter { it.expectedBy }.map { it.from }
+            check(commonModule.isCommonModule)
+            val implModules = commonModule.usages.filter { it.expectedBy }.map { it.from }
 
-            module.contentsSettings = ModuleContentSettings(serviceNameSuffix = "New")
-            impls.forEach {
-                it.contentsSettings = ModuleContentSettings(serviceNameSuffix = "New")
+            commonModule.contentsSettings = ModuleContentSettings(commonModule, serviceNameSuffix = "New")
+            implModules.forEach { implModule ->
+                implModule.contentsSettings = ModuleContentSettings(
+                    implModule,
+                    serviceNameSuffix = "New",
+                    generateActualDeclarationsFor = listOf(commonModule)
+                )
             }
 
             var step = 1
@@ -180,32 +187,32 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
                 step++
             }
 
-            // step 1) create new common files, with js and jvm implementations
+            // step 1) create new common files, with implementations on all paltforms (jvm,js)x(client,server)
             step {
-                generateCommonFile(module, fileNameSuffix = ".new.$step")
-                impls.forEach {
-                    generatePlatformFile(it, fileNameSuffix = ".new.$step")
+                generateCommonFile(commonModule, fileNameSuffix = ".new.$step")
+                implModules.forEach { implModule ->
+                    generatePlatformFile(implModule, fileNameSuffix = ".new.$step")
                 }
             }
 
             // step 2) change platformIndependent in common files implementation
             step {
-                generateCommonFile(module, fileNameSuffix = ".touch.$step")
+                generateCommonFile(commonModule, fileNameSuffix = ".touch.$step")
             }
 
             // step 3) change platformDependent in jvm
             // step 4) change platformDependent in js
-            impls.forEach {
+            implModules.forEach { implModule ->
                 step {
-                    generatePlatformFile(it, fileNameSuffix = ".touch.$step")
+                    generatePlatformFile(implModule, fileNameSuffix = ".touch.$step")
                 }
             }
 
             // step 5) delete new service in all modules
             step {
-                impls.forEach {
-                    serviceKtFile(it, fileNameSuffix = ".delete.$step").setFileContent("")
-                    serviceKtFile(module, fileNameSuffix = ".delete.$step").setFileContent("")
+                implModules.forEach { implModule ->
+                    serviceKtFile(implModule, fileNameSuffix = ".delete.$step").setFileContent("")
+                    serviceKtFile(commonModule, fileNameSuffix = ".delete.$step").setFileContent("")
                 }
             }
         }
@@ -251,16 +258,13 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
         private fun serviceKtFile(module: DependenciesTxt.Module, fileNameSuffix: String = ""): File {
             val suffix =
                 if (module.isCommonModule) "${module.serviceName}Header"
-                else {
-                    // Impl file names already unique, so no module name prefix required
-                    "${module.contentsSettings.serviceNameSuffix}Impl"
-                }
+                else "${module.name.capitalize()}${module.contentsSettings.serviceNameSuffix}Impl"
 
-            return File(dir, "${module.name}_service$suffix.kt$fileNameSuffix")
+            return File(dir, "${module.indexedName}_service$suffix.kt$fileNameSuffix")
         }
 
         fun serviceJavaFile(module: DependenciesTxt.Module, fileNameSuffix: String = ""): File {
-            return File(dir, "${module.name}_${module.javaClassName}.java$fileNameSuffix")
+            return File(dir, "${module.indexedName}_${module.javaClassName}.java$fileNameSuffix")
         }
 
         private val DependenciesTxt.Module.platformDependentFunName: String
@@ -320,9 +324,9 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
                     appendln(generatedByComment)
 
                     if (settings.generatePlatformDependent) {
-                        for (expectedBy in module.expectedBy) {
+                        for (expectedBy in settings.generateActualDeclarationsFor) {
                             appendln(
-                                "actual fun ${expectedBy.to.platformDependentFunName}(): String" +
+                                "actual fun ${expectedBy.platformDependentFunName}(): String" +
                                         " = \"${module.name}$fileNameSuffix\""
                             )
                         }
@@ -381,11 +385,16 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
             appendln("}")
         }
 
-        private fun DependenciesTxt.Module.collectDependenciesRecursivelyTo(collection: MutableCollection<DependenciesTxt.Module>) {
+        private fun DependenciesTxt.Module.collectDependenciesRecursivelyTo(
+            collection: MutableCollection<DependenciesTxt.Module>,
+            exportedOnly: Boolean = false
+        ) {
             dependencies.forEach {
-                val dependentModule = it.to
-                collection.add(dependentModule)
-                dependentModule.collectDependenciesRecursivelyTo(collection)
+                if (!exportedOnly || it.effectivelyExported) {
+                    val dependentModule = it.to
+                    collection.add(dependentModule)
+                    dependentModule.collectDependenciesRecursivelyTo(collection, exportedOnly = true)
+                }
             }
         }
     }

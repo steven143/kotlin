@@ -19,7 +19,6 @@ import org.jetbrains.kotlin.jps.build.dependeciestxt.generated.DependenciesTxtLe
 import org.jetbrains.kotlin.jps.build.dependeciestxt.generated.DependenciesTxtParser
 import org.jetbrains.kotlin.jps.build.dependeciestxt.generated.DependenciesTxtParser.*
 import java.io.File
-import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
@@ -30,11 +29,17 @@ import kotlin.reflect.full.memberProperties
  */
 data class DependenciesTxt(
     val fileName: String,
-    val modules: List<Module>, val dependencies: List<Dependency>
+    val modules: List<Module>,
+    val dependencies: List<Dependency>
 ) {
     override fun toString() = fileName
 
     data class Module(val name: String) {
+        var index: Int = -1
+
+        val indexedName
+            get() = "${index/10}${index%10}_$name"
+
         /**
          * Facet should not be created for old tests
          */
@@ -55,13 +60,13 @@ data class DependenciesTxt(
             get() = dependencies.filter { it.expectedBy }
 
         @Flag
-        var edit: Boolean = false
+        var edit: Boolean = true
 
         @Flag
-        var editJvm: Boolean = false
+        var editJvm: Boolean = true
 
         @Flag
-        var editExpectActual: Boolean = false
+        var editExpectActual: Boolean = true
 
         companion object {
             val flags: Map<String, KMutableProperty1<Module, Boolean>> = Module::class.memberProperties
@@ -80,6 +85,9 @@ data class DependenciesTxt(
         val expectedBy: Boolean,
         val exported: Boolean
     ) {
+        val effectivelyExported
+            get() = expectedBy || exported
+
         init {
             from.dependencies.add(this)
             to.usages.add(this)
@@ -98,11 +106,13 @@ class DependenciesTxtBuilder {
         var defined: Boolean = false
         var actual: DependenciesTxt.Module = DependenciesTxt.Module(name)
 
-        fun build(): DependenciesTxt.Module {
+        fun build(index: Int): DependenciesTxt.Module {
             val result = actual
+            result.index = index
             val kotlinFacetSettings = result.kotlinFacetSettings
             if (kotlinFacetSettings != null) {
-                kotlinFacetSettings.implementedModuleNames = result.dependencies.filter { it.expectedBy }.map { it.to.name }
+                kotlinFacetSettings.implementedModuleNames =
+                        result.dependencies.filter { it.expectedBy }.map { it.to.name }
             }
             return result
         }
@@ -135,11 +145,11 @@ class DependenciesTxtBuilder {
             }
         }
 
-        // dependencies build is required for module.build() (module.dependencies will be filled)
+        // module.build() requires built dependencies
         val dependencies = dependencies.map { it.build() }
         return DependenciesTxt(
             fileTitle,
-            modules.values.map { it.build() },
+            modules.values.mapIndexed { index, moduleRef -> moduleRef.build(index) },
             dependencies
         )
     }

@@ -4,14 +4,14 @@ Building cMain
 Building pJsMain
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
 Building pJvmMain
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJvmMain/src/serviceNewImpl.kt
+  pJvmMain/src/servicePJvmMainNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -20,11 +20,11 @@ Compiling files:
 End of files
 Cleaning output files:
   out/production/pJvmMain/META-INF/pJvmMain.kotlin_module
-  out/production/pJvmMain/ServiceNewImplKt.class
+  out/production/pJvmMain/ServicePJvmMainNewImplKt.class
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJvmMain/src/serviceNewImpl.kt
+  pJvmMain/src/servicePJvmMainNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   cMain/src/serviceCMainNewHeader.kt
@@ -51,10 +51,10 @@ Cleaning output files:
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
 Cleaning output files:
@@ -64,7 +64,7 @@ Cleaning output files:
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   cMain/src/serviceCMainNewHeader.kt
@@ -79,19 +79,19 @@ Cleaning output files:
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJvmMain/src/serviceNewImpl.kt
+  pJvmMain/src/servicePJvmMainNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
-  pJvmMain/src/serviceNewImpl.kt
+  pJvmMain/src/servicePJvmMainNewImpl.kt
 Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
 Cleaning output files:
   out/production/pJvmMain/META-INF/pJvmMain.kotlin_module
-  out/production/pJvmMain/ServiceNewImplKt.class
+  out/production/pJvmMain/ServicePJvmMainNewImplKt.class
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJvmMain/src/serviceNewImpl.kt
+  pJvmMain/src/servicePJvmMainNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   cMain/src/serviceCMainNewHeader.kt
@@ -118,10 +118,10 @@ Cleaning output files:
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
 Cleaning output files:
@@ -131,7 +131,7 @@ Cleaning output files:
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   cMain/src/serviceCMainNewHeader.kt
@@ -144,11 +144,11 @@ Cleaning output files:
   out/production/pJvmMain/META-INF/pJvmMain.kotlin_module
   out/production/pJvmMain/PJvmMainNewJavaClass.class
   out/production/pJvmMain/ServiceCMainNewHeaderKt.class
-  out/production/pJvmMain/ServiceNewImplKt.class
+  out/production/pJvmMain/ServicePJvmMainNewImplKt.class
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJvmMain/src/serviceNewImpl.kt
+  pJvmMain/src/servicePJvmMainNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -174,9 +174,13 @@ Cleaning output files:
 End of files
 Compiling files:
   cMain/src/serviceCMainNewHeader.kt
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 End of files
-Exit code: OK
+Marked as dirty by Kotlin:
+  cMain/src/serviceCMainNewHeader.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
+------------------------------------------
+Exit code: NOTHING_DONE
 ------------------------------------------
 Building pJvmMain
 Exit code: NOTHING_DONE
@@ -207,7 +211,7 @@ Cleaning output files:
   out/production/pJvmMain/ServiceCMainNewHeaderKt.class
 End of files
 Cleaning output files:
-  out/production/pJvmMain/ServiceNewImplKt.class
+  out/production/pJvmMain/ServicePJvmMainNewImplKt.class
 End of files
 Building pJvmMain
 Compiling files:

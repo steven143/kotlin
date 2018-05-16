@@ -6,7 +6,7 @@ Exit code: NOTHING_DONE
 ------------------------------------------
 Building pJvmMain
 Compiling files:
-  pJvmMain/src/serviceNewImpl.kt
+  pJvmMain/src/servicePJvmMainNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -27,10 +27,10 @@ Exit code: NOTHING_DONE
 Building pJvmMain
 Cleaning output files:
   out/production/pJvmMain/META-INF/pJvmMain.kotlin_module
-  out/production/pJvmMain/ServiceNewImplKt.class
+  out/production/pJvmMain/ServicePJvmMainNewImplKt.class
 End of files
 Compiling files:
-  pJvmMain/src/serviceNewImpl.kt
+  pJvmMain/src/servicePJvmMainNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -50,7 +50,7 @@ Exit code: NOTHING_DONE
 ------------------------------------------
 Cleaning output files:
   out/production/pJvmMain/META-INF/pJvmMain.kotlin_module
-  out/production/pJvmMain/ServiceNewImplKt.class
+  out/production/pJvmMain/ServicePJvmMainNewImplKt.class
 End of files
 Building pJvmMain
 Compiling files:

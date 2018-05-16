@@ -11,18 +11,34 @@ Building cTests
 Building pJsTests
 Compiling files:
   cTests/src/serviceCTestsNewHeader.kt
-  pJsTests/src/serviceNewImpl.kt
+  pJsTests/src/servicePJsTestsNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
 Building pJvmTests
 Compiling files:
   cTests/src/serviceCTestsNewHeader.kt
-  pJvmTests/src/serviceNewImpl.kt
+  pJvmTests/src/servicePJvmTestsNewImpl.kt
 End of files
-Exit code: ABORT
+Exit code: OK
 ------------------------------------------
-OK
+Compiling files:
+  pJvmTests/src/PJvmTestsNewJavaClass.java
+End of files
+Cleaning output files:
+  out/production/pJvmTests/META-INF/pJvmTests.kotlin_module
+  out/production/pJvmTests/ServicePJvmTestsNewImplKt.class
+End of files
+Compiling files:
+  cTests/src/serviceCTestsNewHeader.kt
+  pJvmTests/src/servicePJvmTestsNewImpl.kt
+End of files
+Marked as dirty by Kotlin:
+  cTests/src/serviceCTestsNewHeader.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
+------------------------------------------
+Exit code: NOTHING_DONE
+------------------------------------------
 
 ================ Step #2 =================
 
@@ -42,10 +58,10 @@ Cleaning output files:
 End of files
 Compiling files:
   cTests/src/serviceCTestsNewHeader.kt
-  pJsTests/src/serviceNewImpl.kt
+  pJsTests/src/servicePJsTestsNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
-  pJsTests/src/serviceNewImpl.kt
+  pJsTests/src/servicePJsTestsNewImpl.kt
 Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
 Cleaning output files:
@@ -55,7 +71,7 @@ Cleaning output files:
 End of files
 Compiling files:
   cTests/src/serviceCTestsNewHeader.kt
-  pJsTests/src/serviceNewImpl.kt
+  pJsTests/src/servicePJsTestsNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   cTests/src/serviceCTestsNewHeader.kt
@@ -64,13 +80,32 @@ Exit code: ADDITIONAL_PASS_REQUIRED
 Exit code: NOTHING_DONE
 ------------------------------------------
 Building pJvmTests
+Cleaning output files:
+  out/production/pJvmTests/META-INF/pJvmTests.kotlin_module
+  out/production/pJvmTests/ServiceCTestsNewHeaderKt.class
+End of files
 Compiling files:
   cTests/src/serviceCTestsNewHeader.kt
-  pJvmTests/src/serviceNewImpl.kt
+  pJvmTests/src/servicePJvmTestsNewImpl.kt
 End of files
-Exit code: ABORT
+Marked as dirty by Kotlin:
+  pJvmTests/src/servicePJvmTestsNewImpl.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
-OK
+Cleaning output files:
+  out/production/pJvmTests/META-INF/pJvmTests.kotlin_module
+  out/production/pJvmTests/ServicePJvmTestsNewImplKt.class
+End of files
+Compiling files:
+  cTests/src/serviceCTestsNewHeader.kt
+  pJvmTests/src/servicePJvmTestsNewImpl.kt
+End of files
+Marked as dirty by Kotlin:
+  cTests/src/serviceCTestsNewHeader.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
+------------------------------------------
+Exit code: NOTHING_DONE
+------------------------------------------
 
 ================ Step #3 =================
 
@@ -83,42 +118,27 @@ Exit code: NOTHING_DONE
 ------------------------------------------
 Building cTests
 Building pJsTests
-Cleaning output files:
-  out/production/pJsTests/pJsTests.js
-  out/production/pJsTests/pJsTests.meta.js
-  out/production/pJsTests/pJsTests/root-package.kjsm
-End of files
-Compiling files:
-  cTests/src/serviceCTestsNewHeader.kt
-  pJsTests/src/serviceNewImpl.kt
-End of files
-Marked as dirty by Kotlin:
-  pJsTests/src/serviceNewImpl.kt
-Exit code: ADDITIONAL_PASS_REQUIRED
-------------------------------------------
-Cleaning output files:
-  out/production/pJsTests/pJsTests.js
-  out/production/pJsTests/pJsTests.meta.js
-  out/production/pJsTests/pJsTests/root-package.kjsm
-End of files
-Compiling files:
-  cTests/src/serviceCTestsNewHeader.kt
-  pJsTests/src/serviceNewImpl.kt
-End of files
-Marked as dirty by Kotlin:
-  cTests/src/serviceCTestsNewHeader.kt
-Exit code: ADDITIONAL_PASS_REQUIRED
-------------------------------------------
 Exit code: NOTHING_DONE
 ------------------------------------------
 Building pJvmTests
+Cleaning output files:
+  out/production/pJvmTests/META-INF/pJvmTests.kotlin_module
+  out/production/pJvmTests/PJvmTestsNewJavaClass.class
+  out/production/pJvmTests/ServicePJvmTestsNewImplKt.class
+End of files
 Compiling files:
   cTests/src/serviceCTestsNewHeader.kt
-  pJvmTests/src/serviceNewImpl.kt
+  pJvmTests/src/servicePJvmTestsNewImpl.kt
 End of files
-Exit code: ABORT
+Marked as dirty by Kotlin:
+  cTests/src/serviceCTestsNewHeader.kt
+Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
-OK
+Compiling files:
+  pJvmTests/src/PJvmTestsNewJavaClass.java
+End of files
+Exit code: NOTHING_DONE
+------------------------------------------
 
 ================ Step #4 =================
 
@@ -138,7 +158,7 @@ Cleaning output files:
 End of files
 Compiling files:
   cTests/src/serviceCTestsNewHeader.kt
-  pJsTests/src/serviceNewImpl.kt
+  pJsTests/src/servicePJsTestsNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   cTests/src/serviceCTestsNewHeader.kt
@@ -147,13 +167,8 @@ Exit code: ADDITIONAL_PASS_REQUIRED
 Exit code: NOTHING_DONE
 ------------------------------------------
 Building pJvmTests
-Compiling files:
-  cTests/src/serviceCTestsNewHeader.kt
-  pJvmTests/src/serviceNewImpl.kt
-End of files
-Exit code: ABORT
+Exit code: NOTHING_DONE
 ------------------------------------------
-OK
 
 ================ Step #5 =================
 
@@ -175,9 +190,15 @@ Compiling files:
 End of files
 Exit code: OK
 ------------------------------------------
-Building pJvmTests
-Exit code: NOTHING_DONE
-------------------------------------------
-Compiling files:
-  pJvmTests/src/PJvmTestsNewJavaClass.java
+Cleaning output files:
+  out/production/pJvmTests/META-INF/pJvmTests.kotlin_module
+  out/production/pJvmTests/ServiceCTestsNewHeaderKt.class
 End of files
+Cleaning output files:
+  out/production/pJvmTests/ServicePJvmTestsNewImplKt.class
+End of files
+Building pJvmTests
+Compiling files:
+End of files
+Exit code: OK
+------------------------------------------

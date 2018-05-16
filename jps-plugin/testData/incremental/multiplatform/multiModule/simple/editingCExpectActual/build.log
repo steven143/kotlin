@@ -4,14 +4,14 @@ Building c
 Building pJs
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJs/src/serviceNewImpl.kt
+  pJs/src/servicePJsNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
 Building pJvm
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJvm/src/serviceNewImpl.kt
+  pJvm/src/servicePJvmNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -20,11 +20,11 @@ Compiling files:
 End of files
 Cleaning output files:
   out/production/pJvm/META-INF/pJvm.kotlin_module
-  out/production/pJvm/ServiceNewImplKt.class
+  out/production/pJvm/ServicePJvmNewImplKt.class
 End of files
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJvm/src/serviceNewImpl.kt
+  pJvm/src/servicePJvmNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   c/src/serviceCNewHeader.kt
@@ -44,10 +44,10 @@ Cleaning output files:
 End of files
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJs/src/serviceNewImpl.kt
+  pJs/src/servicePJsNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
-  pJs/src/serviceNewImpl.kt
+  pJs/src/servicePJsNewImpl.kt
 Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
 Cleaning output files:
@@ -57,7 +57,7 @@ Cleaning output files:
 End of files
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJs/src/serviceNewImpl.kt
+  pJs/src/servicePJsNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   c/src/serviceCNewHeader.kt
@@ -72,19 +72,19 @@ Cleaning output files:
 End of files
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJvm/src/serviceNewImpl.kt
+  pJvm/src/servicePJvmNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
-  pJvm/src/serviceNewImpl.kt
+  pJvm/src/servicePJvmNewImpl.kt
 Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
 Cleaning output files:
   out/production/pJvm/META-INF/pJvm.kotlin_module
-  out/production/pJvm/ServiceNewImplKt.class
+  out/production/pJvm/ServicePJvmNewImplKt.class
 End of files
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJvm/src/serviceNewImpl.kt
+  pJvm/src/servicePJvmNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   c/src/serviceCNewHeader.kt
@@ -103,11 +103,11 @@ Building pJvm
 Cleaning output files:
   out/production/pJvm/META-INF/pJvm.kotlin_module
   out/production/pJvm/PJvmNewJavaClass.class
-  out/production/pJvm/ServiceNewImplKt.class
+  out/production/pJvm/ServicePJvmNewImplKt.class
 End of files
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJvm/src/serviceNewImpl.kt
+  pJvm/src/servicePJvmNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   c/src/serviceCNewHeader.kt
@@ -130,7 +130,7 @@ Cleaning output files:
 End of files
 Compiling files:
   c/src/serviceCNewHeader.kt
-  pJs/src/serviceNewImpl.kt
+  pJs/src/servicePJsNewImpl.kt
 End of files
 Marked as dirty by Kotlin:
   c/src/serviceCNewHeader.kt
@@ -160,7 +160,7 @@ Cleaning output files:
   out/production/pJvm/ServiceCNewHeaderKt.class
 End of files
 Cleaning output files:
-  out/production/pJvm/ServiceNewImplKt.class
+  out/production/pJvm/ServicePJvmNewImplKt.class
 End of files
 Building pJvm
 Compiling files:

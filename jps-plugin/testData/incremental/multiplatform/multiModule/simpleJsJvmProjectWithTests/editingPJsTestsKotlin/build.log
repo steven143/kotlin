@@ -10,7 +10,7 @@ Exit code: NOTHING_DONE
 Building cTests
 Building pJsTests
 Compiling files:
-  pJsTests/src/serviceNewImpl.kt
+  pJsTests/src/servicePJsTestsNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -35,7 +35,7 @@ Cleaning output files:
   out/production/pJsTests/pJsTests/root-package.kjsm
 End of files
 Compiling files:
-  pJsTests/src/serviceNewImpl.kt
+  pJsTests/src/servicePJsTestsNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------

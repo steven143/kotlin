@@ -3,7 +3,7 @@
 Building cMain
 Building pJsMain
 Compiling files:
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -28,7 +28,7 @@ Cleaning output files:
   out/production/pJsMain/pJsMain/root-package.kjsm
 End of files
 Compiling files:
-  pJsMain/src/serviceNewImpl.kt
+  pJsMain/src/servicePJsMainNewImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------

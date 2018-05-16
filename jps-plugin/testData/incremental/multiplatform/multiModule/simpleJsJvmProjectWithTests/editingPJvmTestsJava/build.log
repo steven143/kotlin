@@ -13,11 +13,22 @@ Exit code: NOTHING_DONE
 ------------------------------------------
 Building pJvmTests
 Compiling files:
-  pJvmTests/src/serviceNewImpl.kt
+  pJvmTests/src/servicePJvmTestsNewImpl.kt
 End of files
-Exit code: ABORT
+Exit code: OK
 ------------------------------------------
-OK
+Compiling files:
+  pJvmTests/src/PJvmTestsNewJavaClass.java
+End of files
+Cleaning output files:
+  out/production/pJvmTests/META-INF/pJvmTests.kotlin_module
+  out/production/pJvmTests/ServicePJvmTestsNewImplKt.class
+End of files
+Compiling files:
+  pJvmTests/src/servicePJvmTestsNewImpl.kt
+End of files
+Exit code: OK
+------------------------------------------
 
 ================ Step #2 =================
 
@@ -33,12 +44,14 @@ Building pJsTests
 Exit code: NOTHING_DONE
 ------------------------------------------
 Building pJvmTests
-Compiling files:
-  pJvmTests/src/serviceNewImpl.kt
+Cleaning output files:
+  out/production/pJvmTests/PJvmTestsNewJavaClass.class
 End of files
-Exit code: ABORT
+Exit code: NOTHING_DONE
 ------------------------------------------
-OK
+Compiling files:
+  pJvmTests/src/PJvmTestsNewJavaClass.java
+End of files
 
 ================ Step #3 =================
 
@@ -53,6 +66,15 @@ Building cTests
 Building pJsTests
 Exit code: NOTHING_DONE
 ------------------------------------------
+Cleaning output files:
+  out/production/pJvmTests/PJvmTestsNewJavaClass.class
+End of files
+Cleaning output files:
+  out/production/pJvmTests/META-INF/pJvmTests.kotlin_module
+  out/production/pJvmTests/ServicePJvmTestsNewImplKt.class
+End of files
 Building pJvmTests
-Exit code: NOTHING_DONE
+Compiling files:
+End of files
+Exit code: OK
 ------------------------------------------

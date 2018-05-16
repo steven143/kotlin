@@ -2,14 +2,14 @@ Building cMain
 Building pJsMain
 Compiling files:
   cMain/src/serviceCMainHeader.kt
-  pJsMain/src/serviceImpl.kt
+  pJsMain/src/servicePJsMainImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
 Building pJvmMain
 Compiling files:
   cMain/src/serviceCMainHeader.kt
-  pJvmMain/src/serviceImpl.kt
+  pJvmMain/src/servicePJvmMainImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -18,11 +18,11 @@ Compiling files:
 End of files
 Cleaning output files:
   out/production/pJvmMain/META-INF/pJvmMain.kotlin_module
-  out/production/pJvmMain/ServiceImplKt.class
+  out/production/pJvmMain/ServicePJvmMainImplKt.class
 End of files
 Compiling files:
   cMain/src/serviceCMainHeader.kt
-  pJvmMain/src/serviceImpl.kt
+  pJvmMain/src/servicePJvmMainImpl.kt
 End of files
 Marked as dirty by Kotlin:
   cMain/src/serviceCMainHeader.kt
@@ -34,14 +34,14 @@ Building cTests
 Building pJsTests
 Compiling files:
   cTests/src/serviceCTestsHeader.kt
-  pJsTests/src/serviceImpl.kt
+  pJsTests/src/servicePJsTestsImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
 Building pJvmTests
 Compiling files:
   cTests/src/serviceCTestsHeader.kt
-  pJvmTests/src/serviceImpl.kt
+  pJvmTests/src/servicePJvmTestsImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
@@ -50,11 +50,11 @@ Compiling files:
 End of files
 Cleaning output files:
   out/production/pJvmTests/META-INF/pJvmTests.kotlin_module
-  out/production/pJvmTests/ServiceImplKt.class
+  out/production/pJvmTests/ServicePJvmTestsImplKt.class
 End of files
 Compiling files:
   cTests/src/serviceCTestsHeader.kt
-  pJvmTests/src/serviceImpl.kt
+  pJvmTests/src/servicePJvmTestsImpl.kt
 End of files
 Marked as dirty by Kotlin:
   cTests/src/serviceCTestsHeader.kt
