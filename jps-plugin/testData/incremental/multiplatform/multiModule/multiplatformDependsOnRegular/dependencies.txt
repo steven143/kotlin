@@ -1,12 +1,12 @@
 // regular module R
 
-r [jvm]
+r [jvm, edit, editJvm]
 
 // common module
 
-c [common]
-pJvm [jvm]
-pJs [js]
+c [common, edit, editExpectActual]
+pJvm [jvm, edit, editJvm]
+pJs [js, edit]
 
 pJvm -> r [compile]
 pJvm -> c [expectedBy]

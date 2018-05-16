@@ -1,4 +1,4 @@
-c [common, edit, editExceptActual]
+c [common, edit, editExpectActual]
 
 pJvm [jvm, edit, editJvm]
 pJvm -> c [expectedBy]

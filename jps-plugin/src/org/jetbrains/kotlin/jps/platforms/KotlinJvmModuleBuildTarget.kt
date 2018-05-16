@@ -16,25 +16,27 @@ import org.jetbrains.jps.builders.java.JavaBuilderUtil
 import org.jetbrains.jps.builders.storage.BuildDataPaths
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.ModuleBuildTarget
+import org.jetbrains.jps.incremental.storage.BuildDataManager
 import org.jetbrains.jps.model.java.JpsJavaExtensionService
 import org.jetbrains.jps.model.module.JpsSdkDependency
 import org.jetbrains.kotlin.build.GeneratedFile
 import org.jetbrains.kotlin.build.GeneratedJvmClass
+import org.jetbrains.kotlin.build.JvmBuildMetaInfo
 import org.jetbrains.kotlin.build.JvmSourceRoot
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
 import org.jetbrains.kotlin.compilerRunner.JpsKotlinCompilerRunner
+import org.jetbrains.kotlin.config.ApiVersion
+import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.config.Services
-import org.jetbrains.kotlin.incremental.ChangesCollector
-import org.jetbrains.kotlin.incremental.IncrementalCompilationComponentsImpl
-import org.jetbrains.kotlin.incremental.IncrementalJvmCache
+import org.jetbrains.kotlin.incremental.*
 import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
 import org.jetbrains.kotlin.incremental.components.LookupTracker
-import org.jetbrains.kotlin.incremental.updateIncrementalCache
 import org.jetbrains.kotlin.jps.build.FSOperationsHelper
 import org.jetbrains.kotlin.jps.build.KotlinBuilder
 import org.jetbrains.kotlin.jps.build.KotlinChunkDirtySourceFilesHolder
+import org.jetbrains.kotlin.jps.build.jvmBuildMetaInfoFile
 import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
 import org.jetbrains.kotlin.jps.incremental.JpsIncrementalJvmCache
 import org.jetbrains.kotlin.jps.model.k2JvmCompilerArguments
@@ -52,6 +54,52 @@ class KotlinJvmModuleBuildTarget(compileContext: CompileContext, jpsModuleBuildT
     KotlinModuleBuildTarget(compileContext, jpsModuleBuildTarget) {
 
     override fun createCacheStorage(paths: BuildDataPaths) = JpsIncrementalJvmCache(jpsModuleBuildTarget, paths)
+
+    override fun checkCachesVersions(chunk: ModuleChunk, dataManager: BuildDataManager, actions: MutableSet<CacheVersion.Action>) {
+        val args = compilerArgumentsForChunk(chunk)
+        val currentBuildMetaInfo = JvmBuildMetaInfo(args)
+
+        for (target in chunk.targets) {
+            val file = jvmBuildMetaInfoFile(target, dataManager)
+            if (!file.exists()) continue
+
+            val lastBuildMetaInfo =
+                try {
+                    JvmBuildMetaInfo.deserializeFromString(file.readText()) ?: continue
+                } catch (e: Exception) {
+                    KotlinBuilder.LOG.error("Could not deserialize jvm build meta info", e)
+                    continue
+                }
+
+            val lastBuildLangVersion = LanguageVersion.fromVersionString(lastBuildMetaInfo.languageVersionString)
+            val lastBuildApiVersion = ApiVersion.parse(lastBuildMetaInfo.apiVersionString)
+            val currentLangVersion =
+                args.languageVersion?.let { LanguageVersion.fromVersionString(it) } ?: LanguageVersion.LATEST_STABLE
+            val currentApiVersion =
+                args.apiVersion?.let { ApiVersion.parse(it) } ?: ApiVersion.createByLanguageVersion(currentLangVersion)
+
+            val reasonToRebuild = when {
+                currentLangVersion != lastBuildLangVersion -> {
+                    "Language version was changed ($lastBuildLangVersion -> $currentLangVersion)"
+                }
+
+                currentApiVersion != lastBuildApiVersion -> {
+                    "Api version was changed ($lastBuildApiVersion -> $currentApiVersion)"
+                }
+
+                lastBuildLangVersion != LanguageVersion.KOTLIN_1_0 && lastBuildMetaInfo.isEAP && !currentBuildMetaInfo.isEAP -> {
+                    // If EAP->Non-EAP build with IC, then rebuild all kotlin
+                    "Last build was compiled with EAP-plugin"
+                }
+                else -> null
+            }
+
+            if (reasonToRebuild != null) {
+                KotlinBuilder.LOG.info("$reasonToRebuild. Performing non-incremental rebuild (kotlin only)")
+                actions.add(CacheVersion.Action.REBUILD_ALL_KOTLIN)
+            }
+        }
+    }
 
     override fun makeServices(
         builder: Services.Builder,

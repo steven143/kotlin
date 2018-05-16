@@ -3,7 +3,7 @@
 // from `incremental/multiplatform/multiModule/simple/dependencies.txt`
 //
 
-c [common, edit, editExceptActual]
+c [common, edit, editExpectActual]
 
 pJvm [jvm, edit, editJvm]
 pJvm -> c [expectedBy]

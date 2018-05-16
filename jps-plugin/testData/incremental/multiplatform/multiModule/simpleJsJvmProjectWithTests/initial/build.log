@@ -1,4 +1,11 @@
 Building cMain
+Building pJsMain
+Compiling files:
+  cMain/src/serviceCMainHeader.kt
+  pJsMain/src/serviceImpl.kt
+End of files
+Exit code: OK
+------------------------------------------
 Building pJvmMain
 Compiling files:
   cMain/src/serviceCMainHeader.kt
@@ -23,14 +30,14 @@ Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
 Exit code: NOTHING_DONE
 ------------------------------------------
-Building pJsMain
+Building cTests
+Building pJsTests
 Compiling files:
-  cMain/src/serviceCMainHeader.kt
-  pJsMain/src/serviceImpl.kt
+  cTests/src/serviceCTestsHeader.kt
+  pJsTests/src/serviceImpl.kt
 End of files
 Exit code: OK
 ------------------------------------------
-Building cTests
 Building pJvmTests
 Compiling files:
   cTests/src/serviceCTestsHeader.kt
@@ -54,11 +61,4 @@ Marked as dirty by Kotlin:
 Exit code: ADDITIONAL_PASS_REQUIRED
 ------------------------------------------
 Exit code: NOTHING_DONE
-------------------------------------------
-Building pJsTests
-Compiling files:
-  cTests/src/serviceCTestsHeader.kt
-  pJsTests/src/serviceImpl.kt
-End of files
-Exit code: OK
 ------------------------------------------

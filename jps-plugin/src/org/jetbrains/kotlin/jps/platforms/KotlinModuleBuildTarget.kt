@@ -10,6 +10,7 @@ import org.jetbrains.jps.builders.storage.BuildDataPaths
 import org.jetbrains.jps.incremental.CompileContext
 import org.jetbrains.jps.incremental.ModuleBuildTarget
 import org.jetbrains.jps.incremental.ProjectBuildException
+import org.jetbrains.jps.incremental.storage.BuildDataManager
 import org.jetbrains.jps.model.java.JavaSourceRootType
 import org.jetbrains.jps.model.java.JpsJavaClasspathKind
 import org.jetbrains.jps.model.java.JpsJavaExtensionService
@@ -21,12 +22,14 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compilerRunner.JpsCompilerEnvironment
 import org.jetbrains.kotlin.config.IncrementalCompilation
 import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.incremental.CacheVersion
 import org.jetbrains.kotlin.incremental.ChangesCollector
 import org.jetbrains.kotlin.incremental.ExpectActualTrackerImpl
 import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.jps.build.*
 import org.jetbrains.kotlin.jps.incremental.JpsIncrementalCache
+import org.jetbrains.kotlin.jps.model.kotlinCompilerArguments
 import org.jetbrains.kotlin.jps.model.productionOutputFilePath
 import org.jetbrains.kotlin.jps.model.testOutputFilePath
 import org.jetbrains.kotlin.modules.TargetId
@@ -169,6 +172,9 @@ abstract class KotlinModuleBuildTarget(val context: CompileContext, val jpsModul
         return false
     }
 
+    fun compilerArgumentsForChunk(chunk: ModuleChunk): CommonCompilerArguments =
+        chunk.representativeTarget().module.kotlinCompilerArguments
+
     open fun doAfterBuild() {
     }
 
@@ -249,5 +255,9 @@ abstract class KotlinModuleBuildTarget(val context: CompileContext, val jpsModul
         }
 
         return hasDirtyOrRemovedSources
+    }
+
+    open fun checkCachesVersions(chunk: ModuleChunk, dataManager: BuildDataManager, actions: MutableSet<CacheVersion.Action>) {
+
     }
 }

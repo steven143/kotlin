@@ -41,16 +41,13 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.ERROR
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.INFO
 import org.jetbrains.kotlin.cli.common.messages.MessageCollectorUtil
 import org.jetbrains.kotlin.compilerRunner.*
-import org.jetbrains.kotlin.config.ApiVersion
 import org.jetbrains.kotlin.config.IncrementalCompilation
-import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.daemon.common.isDaemonEnabled
 import org.jetbrains.kotlin.incremental.*
 import org.jetbrains.kotlin.incremental.components.ExpectActualTracker
 import org.jetbrains.kotlin.incremental.components.LookupTracker
 import org.jetbrains.kotlin.jps.incremental.*
-import org.jetbrains.kotlin.jps.model.kotlinCompilerArguments
 import org.jetbrains.kotlin.jps.platforms.KotlinCommonModuleBuildTarget
 import org.jetbrains.kotlin.jps.platforms.KotlinJsModuleBuildTarget
 import org.jetbrains.kotlin.jps.platforms.KotlinModuleBuildTarget
@@ -179,9 +176,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
 
             val existingClasses = JpsKotlinCompilerRunner().classesFqNamesByFiles(environment, dirtyFiles)
             val previousClasses = cache.classesFqNamesBySources(dirtyFiles + removedFiles)
-//            val previousClasses = cache.classesBySources(dirtyFiles + removedFiles)
             for (jvmClassName in previousClasses) {
-//                val fqName = jvmClassName.fqNameForClassNameWithoutDollars.asString()
                 val fqName = jvmClassName.asString()
                 if (fqName !in existingClasses) {
                     removedClasses.add(fqName)
@@ -207,50 +202,8 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
         val allVersions = cacheVersionsProvider.allVersions(targets)
         val actions = allVersions.map { it.checkVersion() }.toMutableSet()
 
-        val kotlinModuleBuilderTarget = context.kotlinBuildTargets[chunk.representativeTarget()]
-        if (kotlinModuleBuilderTarget !is KotlinJsModuleBuildTarget) {
-            val args = compilerArgumentsForChunk(chunk)
-            val currentBuildMetaInfo = JvmBuildMetaInfo(args)
-
-            for (target in chunk.targets) {
-                val file = jvmBuildMetaInfoFile(target, dataManager)
-                if (!file.exists()) continue
-
-                val lastBuildMetaInfo =
-                    try {
-                        JvmBuildMetaInfo.deserializeFromString(file.readText()) ?: continue
-                    } catch (e: Exception) {
-                        LOG.error("Could not deserialize jvm build meta info", e)
-                        continue
-                    }
-
-                val lastBuildLangVersion = LanguageVersion.fromVersionString(lastBuildMetaInfo.languageVersionString)
-                val lastBuildApiVersion = ApiVersion.parse(lastBuildMetaInfo.apiVersionString)
-                val currentLangVersion =
-                    args.languageVersion?.let { LanguageVersion.fromVersionString(it) } ?: LanguageVersion.LATEST_STABLE
-                val currentApiVersion =
-                    args.apiVersion?.let { ApiVersion.parse(it) } ?: ApiVersion.createByLanguageVersion(currentLangVersion)
-
-                val reasonToRebuild = when {
-                    currentLangVersion != lastBuildLangVersion -> {
-                        "Language version was changed ($lastBuildLangVersion -> $currentLangVersion)"
-                    }
-                    currentApiVersion != lastBuildApiVersion -> {
-                        "Api version was changed ($lastBuildApiVersion -> $currentApiVersion)"
-                    }
-                    lastBuildLangVersion != LanguageVersion.KOTLIN_1_0 && lastBuildMetaInfo.isEAP && !currentBuildMetaInfo.isEAP -> {
-                        // If EAP->Non-EAP build with IC, then rebuild all kotlin
-                        "Last build was compiled with EAP-plugin"
-                    }
-                    else -> null
-                }
-
-                if (reasonToRebuild != null) {
-                    LOG.info("$reasonToRebuild. Performing non-incremental rebuild (kotlin only)")
-                    actions.add(CacheVersion.Action.REBUILD_ALL_KOTLIN)
-                }
-            }
-        }
+        val kotlinModuleBuilderTarget = context.kotlinBuildTargets[chunk.representativeTarget()]!!
+        kotlinModuleBuilderTarget.checkCachesVersions(chunk, dataManager, actions)
 
         return actions
     }
@@ -269,6 +222,10 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
         dirtyFilesHolder: DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget>,
         outputConsumer: ModuleLevelBuilder.OutputConsumer
     ): ModuleLevelBuilder.ExitCode {
+        JavaBuilderUtil.registerFilterToSkipMarkingAffectedFileDirty(context) {
+            it.isKotlinSourceFile
+        }
+
         if (chunk.isDummy(context))
             return NOTHING_DONE
 
@@ -277,7 +234,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
         val messageCollector = MessageCollectorAdapter(context, kotlinTarget)
         val fsOperations = FSOperationsHelper(context, chunk, LOG)
 
-        if (context.kotlinBuildTargets[chunk.representativeTarget()] is KotlinCommonModuleBuildTarget) {
+        if (kotlinTarget is KotlinCommonModuleBuildTarget) {
             return OK
         }
 
@@ -359,7 +316,7 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
             messageCollector
         ) ?: return ABORT
 
-        val commonArguments = compilerArgumentsForChunk(chunk).apply {
+        val commonArguments = kotlinModuleBuilderTarget.compilerArgumentsForChunk(chunk).apply {
             reportOutputFiles = true
             version = true // Always report the version to help diagnosing user issues if they submit the compiler output
         }
@@ -531,9 +488,6 @@ class KotlinBuilder : ModuleLevelBuilder(BuilderCategory.SOURCE_PROCESSOR) {
             }
         }
     }
-
-    private fun compilerArgumentsForChunk(chunk: ModuleChunk): CommonCompilerArguments =
-        chunk.representativeTarget().module.kotlinCompilerArguments
 
     private fun doCompileModuleChunk(
         allCompiledFiles: MutableSet<File>,

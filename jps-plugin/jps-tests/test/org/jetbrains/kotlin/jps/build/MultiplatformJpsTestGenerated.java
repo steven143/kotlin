@@ -72,9 +72,135 @@ public class MultiplatformJpsTestGenerated extends AbstractMultiplatformJpsTest 
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
         }
 
+        @TestMetadata("editingCExpectActual")
+        public void testEditingCExpectActual() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingCExpectActual/");
+        }
+
+        @TestMetadata("editingCKotlin")
+        public void testEditingCKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingCKotlin/");
+        }
+
+        @TestMetadata("editingPJsKotlin")
+        public void testEditingPJsKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJsKotlin/");
+        }
+
+        @TestMetadata("editingPJvmJava")
+        public void testEditingPJvmJava() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJvmJava/");
+        }
+
+        @TestMetadata("editingPJvmKotlin")
+        public void testEditingPJvmKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJvmKotlin/");
+        }
+
+        @TestMetadata("editingRJava")
+        public void testEditingRJava() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingRJava/");
+        }
+
+        @TestMetadata("editingRKotlin")
+        public void testEditingRKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingRKotlin/");
+        }
+
         @TestMetadata("initial")
         public void testInitial() throws Exception {
             runTest("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/initial/");
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingCExpectActual")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingCExpectActual extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingCExpectActual() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingCExpectActual"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingCKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingCKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingCKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingCKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJsKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJsKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJsKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJsKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJvmJava")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJvmJava extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJvmJava() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJvmJava"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJvmKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJvmKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJvmKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingPJvmKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingRJava")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingRJava extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingRJava() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingRJava"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingRKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingRKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingRKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/editingRKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
         }
 
         @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/multiplatformDependsOnRegular/initial")
@@ -134,9 +260,153 @@ public class MultiplatformJpsTestGenerated extends AbstractMultiplatformJpsTest 
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
         }
 
+        @TestMetadata("editingCExpectActual")
+        public void testEditingCExpectActual() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingCExpectActual/");
+        }
+
+        @TestMetadata("editingCKotlin")
+        public void testEditingCKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingCKotlin/");
+        }
+
+        @TestMetadata("editingPJsKotlin")
+        public void testEditingPJsKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJsKotlin/");
+        }
+
+        @TestMetadata("editingPJvmJava")
+        public void testEditingPJvmJava() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJvmJava/");
+        }
+
+        @TestMetadata("editingPJvmKotlin")
+        public void testEditingPJvmKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJvmKotlin/");
+        }
+
+        @TestMetadata("editingRJsKotlin")
+        public void testEditingRJsKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJsKotlin/");
+        }
+
+        @TestMetadata("editingRJvmJava")
+        public void testEditingRJvmJava() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJvmJava/");
+        }
+
+        @TestMetadata("editingRJvmKotlin")
+        public void testEditingRJvmKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJvmKotlin/");
+        }
+
         @TestMetadata("initial")
         public void testInitial() throws Exception {
             runTest("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/initial/");
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingCExpectActual")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingCExpectActual extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingCExpectActual() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingCExpectActual"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingCKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingCKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingCKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingCKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJsKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJsKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJsKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJsKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJvmJava")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJvmJava extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJvmJava() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJvmJava"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJvmKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJvmKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJvmKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingPJvmKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJsKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingRJsKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingRJsKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJsKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJvmJava")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingRJvmJava extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingRJvmJava() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJvmJava"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJvmKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingRJvmKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingRJvmKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/editingRJvmKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
         }
 
         @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/regularDependensOnMultiplatform/initial")
@@ -286,9 +556,189 @@ public class MultiplatformJpsTestGenerated extends AbstractMultiplatformJpsTest 
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
         }
 
+        @TestMetadata("editingCMainExpectActual")
+        public void testEditingCMainExpectActual() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCMainExpectActual/");
+        }
+
+        @TestMetadata("editingCMainKotlin")
+        public void testEditingCMainKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCMainKotlin/");
+        }
+
+        @TestMetadata("editingCTestsExpectActual")
+        public void testEditingCTestsExpectActual() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCTestsExpectActual/");
+        }
+
+        @TestMetadata("editingCTestsKotlin")
+        public void testEditingCTestsKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCTestsKotlin/");
+        }
+
+        @TestMetadata("editingPJsMainKotlin")
+        public void testEditingPJsMainKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJsMainKotlin/");
+        }
+
+        @TestMetadata("editingPJsTestsKotlin")
+        public void testEditingPJsTestsKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJsTestsKotlin/");
+        }
+
+        @TestMetadata("editingPJvmMainJava")
+        public void testEditingPJvmMainJava() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmMainJava/");
+        }
+
+        @TestMetadata("editingPJvmMainKotlin")
+        public void testEditingPJvmMainKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmMainKotlin/");
+        }
+
+        @TestMetadata("editingPJvmTestsJava")
+        public void testEditingPJvmTestsJava() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmTestsJava/");
+        }
+
+        @TestMetadata("editingPJvmTestsKotlin")
+        public void testEditingPJvmTestsKotlin() throws Exception {
+            runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmTestsKotlin/");
+        }
+
         @TestMetadata("initial")
         public void testInitial() throws Exception {
             runTest("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/initial/");
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCMainExpectActual")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingCMainExpectActual extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingCMainExpectActual() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCMainExpectActual"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCMainKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingCMainKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingCMainKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCMainKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCTestsExpectActual")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingCTestsExpectActual extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingCTestsExpectActual() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCTestsExpectActual"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCTestsKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingCTestsKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingCTestsKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingCTestsKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJsMainKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJsMainKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJsMainKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJsMainKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJsTestsKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJsTestsKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJsTestsKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJsTestsKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmMainJava")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJvmMainJava extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJvmMainJava() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmMainJava"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmMainKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJvmMainKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJvmMainKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmMainKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmTestsJava")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJvmTestsJava extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJvmTestsJava() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmTestsJava"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
+        }
+
+        @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmTestsKotlin")
+        @TestDataPath("$PROJECT_ROOT")
+        @RunWith(JUnit3RunnerWithInners.class)
+        public static class EditingPJvmTestsKotlin extends AbstractMultiplatformJpsTest {
+            private void runTest(String testDataFilePath) throws Exception {
+                KotlinTestUtils.runTest(this::doTest, TargetBackend.ANY, testDataFilePath);
+            }
+
+            public void testAllFilesPresentInEditingPJvmTestsKotlin() throws Exception {
+                KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/editingPJvmTestsKotlin"), Pattern.compile("^([^\\.]+)$"), TargetBackend.ANY, true);
+            }
         }
 
         @TestMetadata("jps-plugin/testData/incremental/multiplatform/multiModule/simpleJsJvmProjectWithTests/initial")

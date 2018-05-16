@@ -49,7 +49,7 @@ class MppJpsIncTestsGenerator(val txtFile: File, val txt: DependenciesTxt, val r
                 TestCase("editing${it.capitalName}Java").generateEditing(it, changeJavaClass = true)
             }
 
-            if (it.editExceptActual && it.isCommonModule) {
+            if (it.editExpectActual && it.isCommonModule) {
                 TestCase("editing${it.capitalName}ExpectActual").generateEditingExpectActual(it)
             }
         }

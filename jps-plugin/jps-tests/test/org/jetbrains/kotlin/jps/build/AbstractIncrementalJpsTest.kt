@@ -84,6 +84,7 @@ abstract class AbstractIncrementalJpsTest(
     // is used to compare lookup dumps in a human readable way (lookup symbols are hashed in an actual lookup storage)
     protected lateinit var lookupsDuringTest: MutableSet<LookupSymbol>
     private var isICEnabledBackup: Boolean = false
+    private var isJSICEnabledBackup: Boolean = false
 
     protected var mapWorkingToOriginalFile: MutableMap<File, File> = hashMapOf()
 
@@ -120,7 +121,10 @@ abstract class AbstractIncrementalJpsTest(
         super.setUp()
         lookupsDuringTest = hashSetOf()
         isICEnabledBackup = IncrementalCompilation.isEnabled()
+        isJSICEnabledBackup = IncrementalCompilation.isEnabledForJs()
+
         IncrementalCompilation.setIsEnabled(true)
+        IncrementalCompilation.setIsEnabledForJs(true)
 
         if (DEBUG_LOGGING_ENABLED) {
             enableDebugLogging()
@@ -134,6 +138,7 @@ abstract class AbstractIncrementalJpsTest(
         (AbstractIncrementalJpsTest::systemPropertiesBackup).javaField!![this] = null
         lookupsDuringTest.clear()
         IncrementalCompilation.setIsEnabled(isICEnabledBackup)
+        IncrementalCompilation.setIsEnabledForJs(isJSICEnabledBackup)
         super.tearDown()
     }
 
@@ -222,7 +227,7 @@ abstract class AbstractIncrementalJpsTest(
             assertFalse(outDir.exists())
         }
         else {
-            assertEqualDirectories(outDir, outAfterMake, makeOverallResult.makeFailed)
+            assertEqualDirectories(outAfterMake, outDir, makeOverallResult.makeFailed)
         }
 
         if (!makeOverallResult.makeFailed) {

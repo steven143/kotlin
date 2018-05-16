@@ -61,7 +61,7 @@ data class DependenciesTxt(
         var editJvm: Boolean = false
 
         @Flag
-        var editExceptActual: Boolean = false
+        var editExpectActual: Boolean = false
 
         companion object {
             val flags: Map<String, KMutableProperty1<Module, Boolean>> = Module::class.memberProperties
