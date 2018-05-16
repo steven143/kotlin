@@ -38,6 +38,7 @@ class JvmLower(val context: JvmBackendContext) {
 
         CallableReferenceLowering(context).lower(irFile)
         PropertiesLowering().lower(irFile)
+        AnnotationLowering().runOnFilePostfix(irFile) //should be run before defaults lowering
 
         //Should be before interface lowering
         DefaultArgumentStubGenerator(context, false).runOnFilePostfix(irFile)
