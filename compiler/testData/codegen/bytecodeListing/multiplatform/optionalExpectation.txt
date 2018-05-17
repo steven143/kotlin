@@ -1,0 +1,5 @@
+@kotlin.Metadata
+public final class Foo {
+    public method <init>(): void
+    public final method bar(): void
+}
